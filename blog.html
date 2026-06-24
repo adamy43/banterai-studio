@@ -1,0 +1,162 @@
+<!-- Banter AI Studio — engineering notes. banterai.studio/blog -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banter AI Studio — Engineering Notes</title>
+<meta name="description" content="Field notes from building defensible AI products. Voice latency, phone-tree agents, clinical safety, production RAG.">
+<style>
+  :root{ --ink:#0e0e10; --mute:#8a8a90; --faint:#bcbcc2; --line:#ececef; --bg:#ffffff; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.4}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:720px;margin:0 auto;padding:0 32px}
+  .eyebrow{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--mute);font-weight:600}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:72px;max-width:1180px;margin:0 auto;padding:0 32px}
+  .mark{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.95rem}
+  .mark .dot{width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;display:inline-block}
+  .nav-link{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;font-weight:600}
+
+  header.top{padding:150px 0 50px;text-align:center}
+  header.top h1{margin-top:1.4rem;font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.025em;line-height:1}
+  header.top p{margin:1.4rem auto 0;font-size:1.1rem;color:var(--mute);max-width:46ch;line-height:1.5}
+
+  article{padding:54px 0;border-top:1px solid var(--line)}
+  article .tag{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  article h2{margin-top:.9rem;font-size:clamp(1.6rem,3.6vw,2.2rem);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  article p{margin-top:1.2rem;font-size:1.08rem;color:#26262a;line-height:1.65;max-width:64ch}
+  article p .lead-in{color:var(--ink);font-weight:600}
+
+  .endcap{padding:70px 0;border-top:1px solid var(--line);text-align:center}
+  .endcap h3{font-size:clamp(1.6rem,5vw,2.6rem);font-weight:800;letter-spacing:-.02em}
+  .endcap .book{display:inline-block;margin-top:1.8rem;background:var(--ink);color:#fff;padding:.85rem 1.7rem;border-radius:999px;font-size:1rem;font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mute);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase}
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="row">
+    <a class="mark" href="index.html"><span class="dot"></span> Banter AI Studio</a>
+    <a class="nav-link" href="index.html">← Home</a>
+  </div>
+</nav>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Engineering notes</div>
+    <h1>Notes from the build</h1>
+    <p>The unglamorous parts of making AI products that hold up. Mostly the stuff that doesn't fit in a demo.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <article>
+    <div class="tag">Voice AI · Latency · Jun 2026</div>
+    <h2>Sub-250ms, or it isn't a conversation</h2>
+    <p>A demo voice agent can take two seconds to answer and still look great in a screen recording. Put a real person on the line — a 74-year-old on a care call, a billing rep at a payer — and two seconds is a disaster. They talk over it. They hang up. They decide it's broken.</p>
+    <p>So the number we actually chase is end-to-end latency under <span class="lead-in">~250 milliseconds</span> — the threshold where a back-and-forth starts to feel like a conversation instead of a walkie-talkie.</p>
+    <p>Getting there means treating the whole pipeline as one latency budget, not a sequence of API calls. We stream speech-to-text and start reasoning on partial transcripts instead of waiting for the caller to finish. We pick a different model for each stage — the fast one where it's on the critical path, the smart one where we can hide it. We stream the reply into text-to-speech token by token, so the first syllable is playing while the rest is still being written. And we handle barge-in: the instant the caller speaks, the agent shuts up, the way a human would.</p>
+    <p>That gets us roughly 4–6x faster than typical healthcare voice AI — fast enough that a patient with hearing aids and cognitive load doesn't feel a delay. None of it shows up in a demo. All of it shows up on call number ten thousand. That's the part you're actually paying for.</p>
+  </article>
+
+  <article>
+    <div class="tag">Voice agents · Reliability · Jun 2026</div>
+    <h2>Teaching an AI to beat a payer phone tree</h2>
+    <p>One of the AI healthcare startups we built for had a brutally unglamorous problem: getting paid. Visiting-nurse reimbursement means calling insurers, sitting through phone trees, waiting on hold, answering the same questions a thousand times a day. Perfect work to hand to an agent — if it can survive contact with a real IVR.</p>
+    <p>Phone trees are hostile. They're all different, they change without warning, and they mix DTMF menus ("press 3"), speech prompts ("say your member ID"), dead air, and hold music that sounds exactly like a human picking up. A naive agent gets lost in about four seconds.</p>
+    <p>So we don't treat it as a chat problem — we treat it as a <span class="lead-in">control problem</span>. The agent runs a state machine over the call: figure out whether it's at a menu, a prompt, on hold, or talking to a live human; emit tones or speech accordingly; and keep a model of where it sits in the tree so it can recover when the tree shifts under it. We detect hold-music vs. human pickup so it doesn't start pitching elevator music. And we draw a hard line on escalation — when confidence drops, it hands off to a person instead of guessing on something that decides whether a nurse gets paid.</p>
+    <p>The v1 that walks one happy path is a weekend. The version that holds up across hundreds of payers is the actual product.</p>
+  </article>
+
+  <article>
+    <div class="tag">Clinical AI · Evals · Jun 2026</div>
+    <h2>The double-dose problem</h2>
+    <p>Here's a failure mode that won't show in a demo. On a care call, a patient mentions they've been tired and a little dizzy. The AI dutifully reviews their meds — and asks about the ones with nothing to do with those symptoms. It never checks the blood-pressure med. The patient was taking twice their prescribed dose of lisinopril. The AI missed the only thing that mattered.</p>
+    <p>A chatbot answers questions. A clinical agent has to ask the right ones. The difference is a layer most people skip: a mapping from reported symptoms to the drug classes most likely to cause them, so the model <span class="lead-in">raises</span> — not lowers — the priority of probing the dangerous one. Dizziness and fatigue should make it lean harder on antihypertensives, anticoagulants, insulin. That's the catch that keeps someone out of the ER.</p>
+    <p>You don't get that from a better prompt. You get it from evals run against real call transcripts, scoring whether the agent surfaced the actual risk — not whether it sounded fluent. Fluent is easy. Correct, on the calls that matter, is the whole job. It's also where defensibility actually lives.</p>
+  </article>
+
+  <article>
+    <div class="tag">RAG · Cost &amp; speed · Jun 2026</div>
+    <h2>RAG that doesn't fall over in production</h2>
+    <p>Anyone can stand up a RAG demo: embed some docs, stuff the top chunks into a prompt, ship a chatbot. It works great until it's in front of real users with real stakes — a PE team deciding whether to pull the trigger on an acquisition, where one confident-but-wrong answer is expensive.</p>
+    <p>The diligence tool we built for a private-equity firm had to read mountains of target-company material and surface the things that move a deal. "Pretty good" wasn't acceptable, so most of the work was the unsexy part: retrieval quality, grounding every claim to a source so a human can verify it, and an eval harness that catches regressions before they reach the client.</p>
+    <p>Then there's cost and speed. Naively, you pay top-model prices on every query and wait. We push the hot path onto smaller fine-tuned models, cache aggressively, and save the expensive model for the genuinely hard calls — same output quality, a fraction of the bill and the latency. That tool ended up saving the firm around <span class="lead-in">$32M a year</span> — not because the model was magic, but because the pipeline around it was built to be trusted.</p>
+    <p>That's the throughline on all of this: a v1 is easy now. Reliable, defensible, and affordable at scale is the hard part. That's what we do.</p>
+  </article>
+
+  <article>
+    <div class="tag">Voice AI · Architecture · Jun 2026</div>
+    <h2>The listener constellation: one voice, a dozen AIs</h2>
+    <p>Most healthcare voice AI is a single model on a phone line. It's fine in the middle of a conversation and falls apart at the edges — the moment a patient mentions chest pain, trails off mid-sentence, or quietly admits they stopped taking a med.</p>
+    <p>So we don't run one AI. We run a <span class="lead-in">constellation.</span> One main model talks to the patient. Behind it, a dozen specialized listeners watch the same transcript in parallel — each obsessed with one thing. A medication listener tracks drug names, doses, and "I forgot what this one's for." An emergency listener watches for chest pain, stroke signs, a fall. Cognitive, emotion, symptom, social, environment, service — each its own model, each tuned to catch what a generalist would miss.</p>
+    <p>The listeners don't just observe — they inject. Each can push context into the main model through a priority queue at one of four levels: background, queued, critical, and <span class="lead-in">immediate interrupt</span> — stop the main model mid-word, reserved for emergencies. When the emergency listener fires, it cuts the conversation, triggers the 911 protocol, notifies family, and pre-compiles the patient's history for EMS.</p>
+    <p>One voice on the phone. A dozen AIs behind it, none of which the patient ever sees. And because the listeners are modular, we add a new one without retraining the model that's talking. That's the part a single prompt can't touch — and it's why one nurse can stand behind ten times the panel: the swarm does the catching, the nurse makes the calls that need a human.</p>
+  </article>
+
+  <article>
+    <div class="tag">Clinical AI · Supervision · Jun 2026</div>
+    <h2>The nurse is the law</h2>
+    <p>Clinician-supervised isn't a compliance checkbox we bolt on at the end. It's the architecture.</p>
+    <p>Medicare care management requires a human in the loop — and so does trust. Patients and clinicians aren't going to hand their health to a black box. So we built the whole system around one rule: <span class="lead-in">the nurse is the law.</span> The AI listens, extracts, drafts, and flags. It never makes the clinical decision. Every action it takes is reviewable, attributable, and escalatable to the person whose license is on the line.</p>
+    <p>That sounds like a constraint. It's actually what makes the rest possible. Because the human stays the decision-maker, we can let the AI be aggressive at the parts it's good at — catching the double-dose, surfacing the risk, writing the note — without betting a patient's safety on the model being right. The AI's job is to make sure nothing important reaches the nurse late, and nothing unimportant reaches them at all.</p>
+    <p>Defensible AI in healthcare isn't the model. It's the supervision layer around it.</p>
+  </article>
+
+  <article>
+    <div class="tag">Data · Moats · Jun 2026</div>
+    <h2>The data layer: what you own when you own the calls</h2>
+    <p>Most AI healthcare companies sell software and hope someone uses it. We took the other path: own the operator, and you own every interaction.</p>
+    <p>When the AI listener sits on every call, you don't just deliver care — you generate a longitudinal record no one else has. Medication adherence over time. Symptom progression. Mobility and fall risk. Behavioral signals. Not episodic snapshots from a clinic visit, but a continuous picture of a patient between visits, structured and queryable.</p>
+    <p>That's the data layer, and it compounds. With enough of it you stop reacting and start predicting — flagging the patient drifting toward an ER visit before it happens. It's the difference between a service and an asset. And you only get it by owning the delivery, not licensing a tool into someone else's workflow.</p>
+    <p>It also gets personal. Every call writes back — what the patient committed to, who they mentioned, when they actually pick up — and a model fine-tunes per patient on what works. The system learns that bringing up someone's grandson before asking about medications lifts honest adherence reporting by ~45%, and bakes it in. (Memory is a hybrid knowledge-graph-plus-vector store, not naive RAG; rebuilding it that way cut retrieval latency in half.) Most voice AI is amnesiac. This is the opposite.</p>
+    <p>That's the moat: the company that owns the calls owns the data, and the data gets better every single day.</p>
+  </article>
+
+  <article>
+    <div class="tag">Agents · Care AI · Jun 2026</div>
+    <h2>The work happens while you're still talking</h2>
+    <p>Here's a thing that should be impossible: by the time an elderly patient hangs up, the refill is ordered, the follow-up visit is booked, the family is notified, and the visit note is already written into the chart. Nobody did paperwork after the call. There was no "after."</p>
+    <p>While the conversation flows, the listeners trigger <span class="lead-in">background agents</span> that execute silently. An appointment agent checks availability and books a slot, then surfaces the time naturally ("does Thursday at 10 work?"). A refill agent places the order and coordinates pharmacy delivery. A notification agent texts the documented caregiver and logs which channel they actually answered on. When something upstream failed — a missed nurse visit, a late delivery — a recovery agent calls the vendor on a parallel line and rebooks it, mid-conversation.</p>
+    <p>And a documentation agent writes the visit note into the chart in parallel, so it's done before the patient says goodbye.</p>
+    <p>A demo agent "can book an appointment." The real version does six things at once, silently, while holding a warm conversation with a 78-year-old — and none of them collide. That orchestration is the whole job.</p>
+  </article>
+
+  <article>
+    <div class="tag">Integration · RPA · Jun 2026</div>
+    <h2>Documenting into any EHR without an integration project</h2>
+    <p>What kills AI in healthcare usually isn't the AI. It's the six-to-eighteen-month EHR integration project that has to happen before anything ships. Every operator runs a different system — Athena, Epic, Cerner, eClinicalWorks, the long tail — and each is its own slog of APIs and vendor sign-off.</p>
+    <p>We skipped the whole category. Instead of integrating, the agent uses the EHR the way a nurse does: a browser extension that clicks, types, and navigates the same screens a human would. No API, no SDK, no vendor approval. It writes the visit note, codes the encounter, and updates the care plan inside whatever system is already in place.</p>
+    <p>That collapses the timeline from quarters to days — buy the agency Friday, install the extension Monday, document into their existing EHR by Tuesday. It's not glamorous; RPA never is. But it's the difference between a pilot that ships and a roadmap that doesn't. Picking the unglamorous path that actually works is most of what we do.</p>
+  </article>
+
+</div>
+
+<div class="endcap">
+  <div class="wrap">
+    <div class="eyebrow">Want this for your product?</div>
+    <h3>Let's build something.</h3>
+    <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call ↗</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span>© 2026 Banter AI Studio</span>
+      <span>banterai.studio</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

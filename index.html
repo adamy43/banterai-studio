@@ -1,0 +1,222 @@
+<!-- Banter AI Studio — minimal studio site. banterai.studio -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banter AI Studio</title>
+<meta name="description" content="AI founders taking on founder-level work, end to end. We build real AI products — shipped, not demoed.">
+<style>
+  :root{ --ink:#0e0e10; --mute:#8a8a90; --faint:#bcbcc2; --line:#ececef; --bg:#ffffff; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.4}
+  a{color:inherit;text-decoration:none}
+  .eyebrow{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(10px)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:74px;max-width:1180px;margin:0 auto;padding:0 32px}
+  .mark{display:flex;align-items:center;gap:.5rem;font-weight:700;letter-spacing:.02em;font-size:.95rem}
+  .mark .dot{width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;display:inline-block}
+  .nav-right{display:flex;gap:1.6rem;align-items:center}
+  .nav-link{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;font-weight:600}
+  .nav-link.mute{color:var(--mute)}
+
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px}
+  .hero .eyebrow{margin-bottom:2.2rem}
+  .hero h1{font-size:clamp(2.6rem,10.5vw,9rem);line-height:.92;font-weight:800;letter-spacing:-.02em}
+  .hero .sub{margin-top:2.4rem;font-size:1.1rem;color:var(--mute);max-width:32ch}
+
+  section{padding:110px 0;border-top:1px solid var(--line)}
+  .lead{font-size:clamp(1.7rem,3.8vw,3rem);font-weight:700;letter-spacing:-.015em;line-height:1.16;max-width:20ch}
+  .lead .g{color:var(--mute)}
+  .who{margin-top:1.8rem;font-size:1.15rem;color:var(--mute);max-width:50ch;line-height:1.55}
+  .creds{margin-top:2.8rem;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:600;line-height:1.9}
+
+  .sec-eyebrow{margin-bottom:2.6rem}
+  .item{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid var(--line)}
+  .item:first-of-type{border-top:1px solid var(--line)}
+  .item h3{font-size:clamp(1.6rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em;line-height:1}
+  .item .hl{display:block;margin-top:.5rem;font-size:.95rem;color:var(--mute);max-width:52ch;line-height:1.4}
+  .item .press{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);white-space:nowrap;border-bottom:1px solid var(--ink);padding-bottom:2px}
+  .item.soon h3{color:var(--faint)}
+
+  .press-strip{display:flex;align-items:center;gap:2.4rem;flex-wrap:wrap}
+  .press-strip a{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  .press-strip a:hover{color:var(--ink)}
+
+  .demos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+  .demo{aspect-ratio:16/10;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;color:var(--faint);background:#fafafa}
+  .demo .pill{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+  .demo .t{font-size:1.05rem;color:var(--ink);font-weight:600}
+
+  .steps{display:grid;gap:0}
+  .step{display:flex;gap:1.6rem;align-items:baseline;padding:1.4rem 0;border-bottom:1px solid var(--line)}
+  .step:first-child{border-top:1px solid var(--line)}
+  .step .n{font-size:.8rem;font-weight:800;color:var(--mute);letter-spacing:.1em;min-width:2.4rem}
+  .step .b{font-size:clamp(1.05rem,2.2vw,1.4rem);font-weight:600;letter-spacing:-.01em}
+  .build-note{margin-top:2.6rem;font-size:1.05rem;color:var(--mute);max-width:64ch;line-height:1.6}
+  .build-note b{color:var(--ink);font-weight:600}
+
+  .contact{text-align:center}
+  .contact h2{font-size:clamp(2.2rem,7vw,5rem);font-weight:800;letter-spacing:-.02em;line-height:1}
+  .contact .email{display:inline-block;margin-top:2rem;font-size:1.1rem;border-bottom:2px solid var(--ink);padding-bottom:3px}
+  .contact .cta-row{margin-top:2.2rem;display:flex;gap:1.6rem;align-items:center;justify-content:center;flex-wrap:wrap}
+  .contact .book{background:var(--ink);color:#fff;padding:.85rem 1.7rem;border-radius:999px;font-size:1rem;font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding:34px 0}
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+  .fade{opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+  .fade.in{opacity:1;transform:none}
+  @media(max-width:680px){ .nav-link.mute{display:none} .item{flex-direction:column;align-items:flex-start;gap:.6rem} .demos{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="row">
+    <a class="mark" href="#top"><span class="dot"></span> Banter AI Studio</a>
+    <div class="nav-right">
+      <a class="nav-link" href="#work">Work</a>
+      <a class="nav-link mute" href="#process">Process</a>
+      <a class="nav-link" href="blog.html">Notes</a>
+      <a class="nav-link" href="mailto:adam@banterai.app">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="eyebrow fade">AI Product Studio</div>
+  <h1 class="fade">BANTER&nbsp;AI&nbsp;STUDIO</h1>
+  <p class="sub fade">Defensible AI products, built by ex-founders.</p>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="lead fade">We're all ex-founders between our own ideas. We grind 24/7 and do every part of building — not just the code.</p>
+    <p class="who fade">And we'll give you the no-BS version most dev shops won't: a v1 is easy now — anyone can demo one. Reliable, defensible AI is the hard part, and that's the whole job. We've done it. We're VC-backed founders who've taken startups 0 to 1 and sold them, with real press along the way — not a dev shop of random IT guys.</p>
+    <p class="who fade">For founders and teams who want to build something genuinely cool with AI, or automate the mundane. We've done both.</p>
+    <div class="creds fade">Ex-Uber ML · Berkeley · MIT · IIT · Google · viral-app founders</div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">Selected work</div>
+
+    <div class="item fade">
+      <div><h3>CarynAI</h3><span class="hl">The #1 AI companion in the world. Super viral.</span></div>
+      <a class="press" href="https://fortune.com/2023/05/09/snapchat-influencer-launches-carynai-virtual-girlfriend-bot-openai-gpt4/" target="_blank" rel="noopener">Press ↗</a>
+    </div>
+
+    <div class="item fade">
+      <div><h3>Banter AI</h3><span class="hl">The first AI phone-call product. 1M users.</span></div>
+      <a class="press" href="https://www.nbcnews.com/tech/ai-powered-virtual-girlfriend-caryn-marjorie-snapchat-influencer-rcna84180" target="_blank" rel="noopener">Press ↗</a>
+    </div>
+
+    <div class="item fade">
+      <div><h3>AI healthcare startup</h3><span class="hl">Built their MVP. They raised a $10M seed from Bain Capital.</span></div>
+      <span class="press" style="border:none;color:var(--mute)">Seed · $10M</span>
+    </div>
+
+    <div class="item fade">
+      <div><h3>NightingaleMD</h3><span class="hl">One of 12 companies invited to the White House for our AI care-management product.</span></div>
+      <span class="press" style="border:none;color:var(--mute)">White House</span>
+    </div>
+
+    <div class="item fade">
+      <div><h3>A private-equity firm</h3><span class="hl">AI diligence tool that saved them $32M a year.</span></div>
+      <span class="press" style="border:none;color:var(--mute)">Saved $32M/yr</span>
+    </div>
+
+    <div class="item soon fade">
+      <div><h3>Your product</h3></div>
+      <span class="press" style="border:none;color:var(--mute)">Now booking</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">As seen in</div>
+    <div class="press-strip fade">
+      <a href="https://fortune.com/2023/05/09/snapchat-influencer-launches-carynai-virtual-girlfriend-bot-openai-gpt4/" target="_blank" rel="noopener">Fortune</a>
+      <a href="https://www.nbcnews.com/tech/ai-powered-virtual-girlfriend-caryn-marjorie-snapchat-influencer-rcna84180" target="_blank" rel="noopener">NBC News</a>
+      <a href="https://decrypt.co/139633/snapchat-star-caryn-marjorie-ai-girlfriend-carynai" target="_blank" rel="noopener">Decrypt</a>
+    </div>
+  </div>
+</section>
+
+<section id="demos">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">See it work</div>
+    <div class="demos">
+      <div class="demo fade"><span class="pill">Demo</span><span class="t">Care-management agent</span></div>
+      <div class="demo fade"><span class="pill">Demo</span><span class="t">Reimbursement agent</span></div>
+      <div class="demo fade"><span class="pill">Demo</span><span class="t">CarynAI — companion</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">How we work</div>
+    <div class="steps">
+      <div class="step fade"><span class="n">01</span><span class="b">We observe your workflows for a week.</span></div>
+      <div class="step fade"><span class="n">02</span><span class="b">We map the inhuman parts — the work that should be automated.</span></div>
+      <div class="step fade"><span class="n">03</span><span class="b">We tie it to the business bottom line: what this is actually worth.</span></div>
+      <div class="step fade"><span class="n">04</span><span class="b">We build a working version in 3 days. Free.</span></div>
+      <div class="step fade"><span class="n">05</span><span class="b">If it's good, we ship reliable AI that actually works.</span></div>
+    </div>
+    <p class="build-note fade">Custom RAG, proprietary voice AI, and fine-tuned models — optimized for cost and speed. The kind of thing random engineers can't pull off, but founders who've built and sold real startups can. <b>Engineered for fundraising milestones, defensibility, and reliability.</b></p>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">Engineering notes</div>
+    <a class="item fade" href="blog.html"><div><h3>Sub-250ms, or it isn't a conversation</h3><span class="hl">Why voice-AI latency is the whole game.</span></div><span class="press" style="border:none;color:var(--mute)">Voice AI ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>Teaching an AI to beat a payer phone tree</h3><span class="hl">IVRs are hostile. We treat them as a control problem.</span></div><span class="press" style="border:none;color:var(--mute)">Voice agents ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>The double-dose problem</h3><span class="hl">Making clinical AI ask the right question, not just answer one.</span></div><span class="press" style="border:none;color:var(--mute)">Clinical AI ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>RAG that doesn't fall over in production</h3><span class="hl">Grounding, evals, and cost without cutting quality.</span></div><span class="press" style="border:none;color:var(--mute)">RAG ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>The listener constellation: one voice, a dozen AIs</h3><span class="hl">A swarm of specialized listeners with priority-queue interrupts.</span></div><span class="press" style="border:none;color:var(--mute)">Voice AI ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>The nurse is the law</h3><span class="hl">Clinician-supervised AI as architecture, not a checkbox.</span></div><span class="press" style="border:none;color:var(--mute)">Supervision ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>The data layer: what you own when you own the calls</h3><span class="hl">Own the operator, own every interaction. That's the moat.</span></div><span class="press" style="border:none;color:var(--mute)">Data ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>The work happens while you're still talking</h3><span class="hl">Background agents that book, refill, notify, and document — silently.</span></div><span class="press" style="border:none;color:var(--mute)">Agents ↗</span></a>
+    <a class="item fade" href="blog.html"><div><h3>Documenting into any EHR without an integration project</h3><span class="hl">A browser agent that uses the EHR like a nurse does. Days, not quarters.</span></div><span class="press" style="border:none;color:var(--mute)">RPA ↗</span></a>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade" style="margin-bottom:1.6rem">Let's talk</div>
+    <h2 class="fade">Start a project</h2>
+    <div class="cta-row fade">
+      <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call ↗</a>
+      <a class="email" style="margin-top:0" href="mailto:adam@banterai.app?subject=Project%20inquiry%20%E2%80%94%20Banter%20AI%20Studio">adam@banterai.app</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span>© 2026 Banter AI Studio</span>
+      <span>banterai.studio</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var els=document.querySelectorAll('.fade');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+    els.forEach(function(e){io.observe(e)});
+  })();
+</script>
+</body>
+</html>
