@@ -45,7 +45,7 @@
 <nav>
   <div class="row">
     <a class="mark" href="index.html"><span class="dot"></span> Banter AI Studio</a>
-    <a class="nav-link" href="index.html">← Home</a>
+    <a class="nav-link" href="index.html">← All posts</a>
   </div>
 </nav>
 
@@ -59,7 +59,7 @@
 
 <div class="wrap">
 
-  <article>
+  <article id="latency">
     <div class="tag">Voice AI · Latency · Jun 2026</div>
     <h2>Sub-250ms, or it isn't a conversation</h2>
     <p>A demo voice agent can take two seconds to answer and still look great in a screen recording. Put a real person on the line — a 74-year-old on a care call, a billing rep at a payer — and two seconds is a disaster. They talk over it. They hang up. They decide it's broken.</p>
@@ -68,7 +68,7 @@
     <p>That gets us roughly 4–6x faster than typical healthcare voice AI — fast enough that a patient with hearing aids and cognitive load doesn't feel a delay. None of it shows up in a demo. All of it shows up on call number ten thousand. That's the part you're actually paying for.</p>
   </article>
 
-  <article>
+  <article id="phone-tree">
     <div class="tag">Voice agents · Reliability · Jun 2026</div>
     <h2>Teaching an AI to beat a payer phone tree</h2>
     <p>One of the AI healthcare startups we built for had a brutally unglamorous problem: getting paid. Visiting-nurse reimbursement means calling insurers, sitting through phone trees, waiting on hold, answering the same questions a thousand times a day. Perfect work to hand to an agent — if it can survive contact with a real IVR.</p>
@@ -77,7 +77,7 @@
     <p>The v1 that walks one happy path is a weekend. The version that holds up across hundreds of payers is the actual product.</p>
   </article>
 
-  <article>
+  <article id="double-dose">
     <div class="tag">Clinical AI · Evals · Jun 2026</div>
     <h2>The double-dose problem</h2>
     <p>Here's a failure mode that won't show in a demo. On a care call, a patient mentions they've been tired and a little dizzy. The AI dutifully reviews their meds — and asks about the ones with nothing to do with those symptoms. It never checks the blood-pressure med. The patient was taking twice their prescribed dose of lisinopril. The AI missed the only thing that mattered.</p>
@@ -85,7 +85,7 @@
     <p>You don't get that from a better prompt. You get it from evals run against real call transcripts, scoring whether the agent surfaced the actual risk — not whether it sounded fluent. Fluent is easy. Correct, on the calls that matter, is the whole job. It's also where defensibility actually lives.</p>
   </article>
 
-  <article>
+  <article id="rag">
     <div class="tag">RAG · Cost &amp; speed · Jun 2026</div>
     <h2>RAG that doesn't fall over in production</h2>
     <p>Anyone can stand up a RAG demo: embed some docs, stuff the top chunks into a prompt, ship a chatbot. It works great until it's in front of real users with real stakes — a PE team deciding whether to pull the trigger on an acquisition, where one confident-but-wrong answer is expensive.</p>
@@ -94,7 +94,7 @@
     <p>That's the throughline on all of this: a v1 is easy now. Reliable, defensible, and affordable at scale is the hard part. That's what we do.</p>
   </article>
 
-  <article>
+  <article id="constellation">
     <div class="tag">Voice AI · Architecture · Jun 2026</div>
     <h2>The listener constellation: one voice, a dozen AIs</h2>
     <p>Most healthcare voice AI is a single model on a phone line. It's fine in the middle of a conversation and falls apart at the edges — the moment a patient mentions chest pain, trails off mid-sentence, or quietly admits they stopped taking a med.</p>
@@ -103,7 +103,7 @@
     <p>One voice on the phone. A dozen AIs behind it, none of which the patient ever sees. And because the listeners are modular, we add a new one without retraining the model that's talking. That's the part a single prompt can't touch — and it's why one nurse can stand behind ten times the panel: the swarm does the catching, the nurse makes the calls that need a human.</p>
   </article>
 
-  <article>
+  <article id="supervision">
     <div class="tag">Clinical AI · Supervision · Jun 2026</div>
     <h2>The nurse is the law</h2>
     <p>Clinician-supervised isn't a compliance checkbox we bolt on at the end. It's the architecture.</p>
@@ -112,7 +112,7 @@
     <p>Defensible AI in healthcare isn't the model. It's the supervision layer around it.</p>
   </article>
 
-  <article>
+  <article id="data-layer">
     <div class="tag">Data · Moats · Jun 2026</div>
     <h2>The data layer: what you own when you own the calls</h2>
     <p>Most AI healthcare companies sell software and hope someone uses it. We took the other path: own the operator, and you own every interaction.</p>
@@ -122,7 +122,7 @@
     <p>That's the moat: the company that owns the calls owns the data, and the data gets better every single day.</p>
   </article>
 
-  <article>
+  <article id="agents">
     <div class="tag">Agents · Care AI · Jun 2026</div>
     <h2>The work happens while you're still talking</h2>
     <p>Here's a thing that should be impossible: by the time an elderly patient hangs up, the refill is ordered, the follow-up visit is booked, the family is notified, and the visit note is already written into the chart. Nobody did paperwork after the call. There was no "after."</p>
@@ -131,7 +131,7 @@
     <p>A demo agent "can book an appointment." The real version does six things at once, silently, while holding a warm conversation with a 78-year-old — and none of them collide. That orchestration is the whole job.</p>
   </article>
 
-  <article>
+  <article id="ehr">
     <div class="tag">Integration · RPA · Jun 2026</div>
     <h2>Documenting into any EHR without an integration project</h2>
     <p>What kills AI in healthcare usually isn't the AI. It's the six-to-eighteen-month EHR integration project that has to happen before anything ships. Every operator runs a different system — Athena, Epic, Cerner, eClinicalWorks, the long tail — and each is its own slog of APIs and vendor sign-off.</p>
@@ -141,18 +141,11 @@
 
 </div>
 
-<div class="endcap">
-  <div class="wrap">
-    <div class="eyebrow">Want this for your product?</div>
-    <h3>Let's build something.</h3>
-    <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call ↗</a>
-  </div>
-</div>
-
 <footer>
   <div class="wrap">
     <div class="row">
       <span>© 2026 Banter AI Studio</span>
+      <a href="mailto:adam@banterai.app">adam@banterai.app</a>
       <span>banterai.studio</span>
     </div>
   </div>
