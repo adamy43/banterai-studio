@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Banter AI Studio</title>
-<meta name="description" content="VC-backed AI founders who build real AI products, end to end.">
+<meta name="description" content="We turn your service into an AI product you own. Small fee to build it. If it makes money, we take a percentage.">
 <style>
   :root{ --ink:#0e0e10; --mute:#8a8a90; --faint:#bcbcc2; --line:#ececef; --bg:#ffffff; }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -57,6 +57,7 @@
   .step:first-child{border-top:1px solid var(--line)}
   .step .n{font-size:.8rem;font-weight:800;color:var(--mute);letter-spacing:.1em;min-width:2.4rem}
   .step .b{font-size:clamp(1.05rem,2.2vw,1.4rem);font-weight:600;letter-spacing:-.01em}
+  #terms .step .n{min-width:5.2rem}
   .build-note{margin-top:2.6rem;font-size:1.05rem;color:var(--mute);max-width:64ch;line-height:1.6}
   .build-note b{color:var(--ink);font-weight:600}
 
@@ -72,7 +73,7 @@
 
   .fade{opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
   .fade.in{opacity:1;transform:none}
-  @media(max-width:680px){ .nav-link.mute{display:none} .item{flex-direction:column;align-items:flex-start;gap:.6rem} .demos{grid-template-columns:1fr} }
+  @media(max-width:680px){ .nav-link.mute,.nav-link.hide-sm{display:none} .nav-right{gap:1.1rem} .item{flex-direction:column;align-items:flex-start;gap:.6rem} .demos{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -83,7 +84,8 @@
     <div class="nav-right">
       <a class="nav-link" href="#work">Work</a>
       <a class="nav-link mute" href="#process">Process</a>
-      <a class="nav-link" href="engineering.html">Engineering Blog</a>
+      <a class="nav-link" href="#terms">Terms</a>
+      <a class="nav-link hide-sm" href="engineering.html">Engineering Blog</a>
       <a class="nav-link" href="mailto:adam@banterai.app">Contact</a>
     </div>
   </div>
@@ -92,21 +94,23 @@
 <header class="hero" id="top">
   <div class="eyebrow fade">AI Product Studio</div>
   <h1 class="fade">BANTER&nbsp;AI&nbsp;STUDIO</h1>
-  <p class="sub fade">Defensible AI products, built by ex-founders.</p>
+  <p class="sub fade">We turn your service into an AI product you own.</p>
 </header>
 
 <section>
   <div class="wrap">
-    <p class="lead fade">Ex-founders between our own ideas. We build every part — not just the code.</p>
-    <p class="who fade">We're VC-backed founders. We've built viral AI products to millions of users — and sold the companies behind them.</p>
-    <p class="who fade">Now we build for you: a new AI product, or the mundane automated.</p>
+    <p class="lead fade">Turn your service into an AI product. <span class="g">Own it.</span></p>
+    <p class="who fade">You already know how to do something people pay for. Today you sell it as hours. The product version does that work without you in it, and the revenue does not depend on your time.</p>
+    <p class="who fade">Don't pay an agency to learn your workflows and keep what they learn. Your expertise is the hard part. We build the software around it, and it stays yours.</p>
+    <p class="who fade">We're VC-backed founders. We've built viral AI products to millions of users and sold the companies behind them. We have done this for a private equity firm, a healthcare startup, and ourselves.</p>
     <div class="creds fade">Ex-Uber ML · Berkeley · MIT · IIT · Google · viral-app founders</div>
   </div>
 </section>
 
 <section id="work">
   <div class="wrap">
-    <div class="eyebrow sec-eyebrow fade">Selected work</div>
+    <div class="eyebrow sec-eyebrow fade" style="margin-bottom:1.4rem">Selected work</div>
+    <p class="who fade" style="margin-top:0;margin-bottom:2.6rem">Some of these were our own companies. The rest started as somebody else's expertise and became a product.</p>
 
     <div class="item fade">
       <div><h3>CarynAI</h3><span class="hl">The #1 AI companion in the world. Super viral.</span></div>
@@ -124,7 +128,7 @@
     </div>
 
     <div class="item fade">
-      <div><h3>NightingaleMD</h3><span class="hl">One of 12 companies invited to the White House for our AI care-management product.</span></div>
+      <div><h3>An AI care-management company</h3><span class="hl">One of 12 companies invited to the White House for the AI product we built.</span></div>
       <span class="press" style="border:none;color:var(--mute)">White House</span>
     </div>
 
@@ -168,13 +172,27 @@
   <div class="wrap">
     <div class="eyebrow sec-eyebrow fade">How we work</div>
     <div class="steps">
-      <div class="step fade"><span class="n">01</span><span class="b">We observe your workflows for a week.</span></div>
-      <div class="step fade"><span class="n">02</span><span class="b">We map the inhuman parts — the work that should be automated.</span></div>
-      <div class="step fade"><span class="n">03</span><span class="b">We tie it to the business bottom line: what this is actually worth.</span></div>
+      <div class="step fade"><span class="n">01</span><span class="b">We watch how you actually work for a week.</span></div>
+      <div class="step fade"><span class="n">02</span><span class="b">We find the part of your service that can be a product.</span></div>
+      <div class="step fade"><span class="n">03</span><span class="b">We tie it to money: what it is worth, and who else would pay for it.</span></div>
       <div class="step fade"><span class="n">04</span><span class="b">We build a working version in 3 days. Free.</span></div>
-      <div class="step fade"><span class="n">05</span><span class="b">If it's good, we ship reliable AI that actually works.</span></div>
+      <div class="step fade"><span class="n">05</span><span class="b">If it's good, we build the real product for a small fixed fee.</span></div>
+      <div class="step fade"><span class="n">06</span><span class="b">It ships under your name. You own it. We take a percentage of what it earns.</span></div>
     </div>
-    <p class="build-note fade">Custom RAG, proprietary voice AI, fine-tuned models — tuned for cost and speed. <b>Engineered for fundraising milestones, defensibility, and reliability.</b> Read how we do it on the <a href="engineering.html" style="border-bottom:1px solid var(--ink);color:var(--ink)">engineering blog</a>.</p>
+    <p class="build-note fade">Custom RAG, proprietary voice AI, fine-tuned models, tuned for cost and speed. <b>Engineered for reliability and defensibility, so it holds up when real customers use it.</b> Read how we do it on the <a href="engineering.html" style="border-bottom:1px solid var(--ink);color:var(--ink)">engineering blog</a>.</p>
+  </div>
+</section>
+
+<section id="terms">
+  <div class="wrap">
+    <div class="eyebrow sec-eyebrow fade">Terms</div>
+    <p class="lead fade">A small fee to build it. <span class="g">A percentage if it makes money.</span></p>
+    <div class="steps" style="margin-top:2.8rem">
+      <div class="step fade"><span class="n">FEE</span><span class="b">A small fixed fee for the MVP. That is the whole cost to find out if this works.</span></div>
+      <div class="step fade"><span class="n">SHARE</span><span class="b">After that we take a percentage of the revenue the product brings in.</span></div>
+      <div class="step fade"><span class="n">OWN</span><span class="b">The product is yours. Your workflows, your customers, your name on it.</span></div>
+    </div>
+    <p class="build-note fade">We get paid mostly when the product earns, so we only take projects we think will earn. Terms are agreed in writing before we build.</p>
   </div>
 </section>
 
@@ -182,6 +200,7 @@
   <div class="wrap">
     <div class="eyebrow sec-eyebrow fade" style="margin-bottom:1.6rem">Let's talk</div>
     <h2 class="fade">Start a project</h2>
+    <p class="who fade" style="margin:1.6rem auto 0;text-align:center">Tell us what your business does. We'll tell you what the product version of it looks like.</p>
     <div class="cta-row fade">
       <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call ↗</a>
       <a class="email" style="margin-top:0" href="mailto:adam@banterai.app?subject=Project%20inquiry%20%E2%80%94%20Banter%20AI%20Studio">adam@banterai.app</a>
