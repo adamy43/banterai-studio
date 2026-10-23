@@ -6,74 +6,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Banter AI Studio</title>
 <meta name="description" content="We turn your service into an AI product you own. Small fee to build it. If it makes money, we take a percentage.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root{ --ink:#0e0e10; --mute:#8a8a90; --faint:#bcbcc2; --line:#ececef; --bg:#ffffff; }
+  :root{ --ink:#161412; --mute:#5f5a52; --faint:#a39d92; --line:#d9d3c6; --bg:#f4f1ea; --card:#ebe6db; --accent:#b8381d;
+    --serif:"Instrument Serif",Georgia,serif; --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace; }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.4}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45}
   a{color:inherit;text-decoration:none}
-  .eyebrow{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--mute);font-weight:600}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 40px}
 
-  nav{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(10px)}
-  nav .row{display:flex;align-items:center;justify-content:space-between;height:74px;max-width:1180px;margin:0 auto;padding:0 32px}
-  .mark{display:flex;align-items:center;gap:.5rem;font-weight:700;letter-spacing:.02em;font-size:.95rem}
-  .mark .dot{width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;display:inline-block}
-  .nav-right{display:flex;gap:1.6rem;align-items:center}
-  .nav-link{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;font-weight:600}
-  .nav-link.mute{color:var(--mute)}
+  nav{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(244,241,234,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1240px;margin:0 auto;padding:0 40px}
+  .mark{display:flex;align-items:center;gap:.55rem;font-weight:600;font-size:.98rem;letter-spacing:-.01em}
+  .mark .dot{width:14px;height:14px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;display:inline-block;transform:rotate(-45deg)}
+  .nav-right{display:flex;gap:1.9rem;align-items:center}
+  .nav-link{font-size:.9rem;font-weight:500;color:var(--mute);transition:color .2s}
+  .nav-link:hover{color:var(--ink)}
+  .nav-cta{color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:.42rem .95rem}
+  .nav-cta:hover{background:var(--ink);color:var(--bg)}
 
-  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px}
-  .hero .eyebrow{margin-bottom:2.2rem}
-  .hero h1{font-size:clamp(2.6rem,10.5vw,9rem);line-height:.92;font-weight:800;letter-spacing:-.02em}
-  .hero .sub{margin-top:2.4rem;font-size:1.1rem;color:var(--mute);max-width:32ch}
+  .hero{position:relative;padding:150px 40px 70px;max-width:1240px;margin:0 auto}
+  .hero-in{border-top:3px double var(--ink);border-bottom:1px solid var(--ink);padding:26px 0 44px;text-align:center}
+  .hero .eyebrow{display:flex;justify-content:center;gap:1rem;align-items:center;margin-bottom:2.2rem;color:var(--ink)}
+  .hero .eyebrow::before,.hero .eyebrow::after{content:"";height:1px;width:64px;background:var(--ink)}
+  .hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,11.6vw,10.6rem);line-height:.86;letter-spacing:-.015em}
+  .hero .sub{margin:2.2rem auto 0;font-family:var(--serif);font-style:italic;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.2;color:var(--ink);max-width:30ch}
 
   section{padding:110px 0;border-top:1px solid var(--line)}
-  .lead{font-size:clamp(1.7rem,3.8vw,3rem);font-weight:700;letter-spacing:-.015em;line-height:1.16;max-width:20ch}
-  .lead .g{color:var(--mute)}
-  .who{margin-top:1.8rem;font-size:1.15rem;color:var(--mute);max-width:50ch;line-height:1.55}
-  .creds{margin-top:2.8rem;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:600;line-height:1.9}
+  section.intro{border-top:0;padding-top:40px}
+  .split{display:grid;grid-template-columns:5fr 6fr;gap:80px;align-items:start}
+  .lead{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,4.6vw,4rem);letter-spacing:-.01em;line-height:1.02;max-width:18ch}
+  .lead .g{font-style:italic;color:var(--accent)}
+  .who{font-size:1.12rem;color:var(--mute);max-width:56ch;line-height:1.62}
+  .split-r .who + .who{margin-top:1.1rem}
+  .split-r .who:first-child{color:var(--ink);font-size:1.25rem}
+  .creds{margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid var(--line);font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);line-height:1.9}
 
-  .sec-eyebrow{margin-bottom:2.6rem}
-  .item{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid var(--line)}
-  .item:first-of-type{border-top:1px solid var(--line)}
-  .item h3{font-size:clamp(1.6rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em;line-height:1}
-  .item .hl{display:block;margin-top:.5rem;font-size:.95rem;color:var(--mute);max-width:52ch;line-height:1.4}
-  .item .press{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);white-space:nowrap;border-bottom:1px solid var(--ink);padding-bottom:2px}
-  .item.soon h3{color:var(--faint)}
+  .sec-head{display:grid;grid-template-columns:5fr 6fr;gap:80px;align-items:end;margin-bottom:2.6rem}
+  .sec-eyebrow{margin-bottom:2.4rem}
+  .sec-head .sec-eyebrow{margin-bottom:0}
+  .intro-who{margin:0}
+  .items{border-top:1px solid var(--ink)}
+  .item{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:1.9rem 0;border-bottom:1px solid var(--line);transition:padding .3s}
+  .item h3{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,4.6vw,3.6rem);letter-spacing:-.01em;line-height:1}
+  .item .hl{display:block;margin-top:.7rem;font-size:1rem;color:var(--mute);max-width:60ch;line-height:1.5}
+  .item .press{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;border:1px solid var(--ink);border-radius:999px;padding:.45rem .9rem;transition:background .2s,color .2s}
+  .item a.press:hover{background:var(--ink);color:var(--bg)}
+  .item .press.stat{border-color:var(--line);color:var(--mute)}
+  .item:hover{padding-left:12px}
+  .item.soon h3{font-style:italic;color:var(--faint)}
 
-  .press-strip{display:flex;align-items:center;gap:2.4rem;flex-wrap:wrap}
-  .press-strip a{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:600}
-  .press-strip a:hover{color:var(--ink)}
+  .seen{background:var(--card)}
+  .seen .wrap{display:flex;align-items:center;justify-content:space-between;gap:3rem;flex-wrap:wrap}
+  .seen .sec-eyebrow{margin:0}
+  .press-strip{display:flex;align-items:center;gap:3rem;flex-wrap:wrap}
+  .press-strip a{font-family:var(--serif);font-size:1.9rem;color:var(--ink);opacity:.72;transition:opacity .2s}
+  .press-strip a:hover{opacity:1}
+  .seen{padding:56px 0}
 
-  .demos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
-  .demo{aspect-ratio:16/10;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;color:var(--faint);background:#fafafa}
-  .demo .pill{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
-  .demo .t{font-size:1.05rem;color:var(--ink);font-weight:600}
+  .demos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .demo{position:relative;overflow:hidden;aspect-ratio:4/3;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;justify-content:flex-end;gap:.35rem;padding:22px;background:var(--card)}
+  .demo-art{position:absolute;left:50%;top:40%;width:168px;height:64px;margin:-32px 0 0 -84px;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 168 64' fill='%23161412'><rect x='0' y='27.0' width='3' height='10' rx='1.5'/><rect x='8' y='23.0' width='3' height='18' rx='1.5'/><rect x='16' y='17.0' width='3' height='30' rx='1.5'/><rect x='24' y='21.0' width='3' height='22' rx='1.5'/><rect x='32' y='12.0' width='3' height='40' rx='1.5'/><rect x='40' y='18.0' width='3' height='28' rx='1.5'/><rect x='48' y='6.0' width='3' height='52' rx='1.5'/><rect x='56' y='14.0' width='3' height='36' rx='1.5'/><rect x='64' y='20.0' width='3' height='24' rx='1.5'/><rect x='72' y='10.0' width='3' height='44' rx='1.5'/><rect x='80' y='2.0' width='3' height='60' rx='1.5'/><rect x='88' y='13.0' width='3' height='38' rx='1.5'/><rect x='96' y='19.0' width='3' height='26' rx='1.5'/><rect x='104' y='8.0' width='3' height='48' rx='1.5'/><rect x='112' y='15.0' width='3' height='34' rx='1.5'/><rect x='120' y='22.0' width='3' height='20' rx='1.5'/><rect x='128' y='11.0' width='3' height='42' rx='1.5'/><rect x='136' y='17.0' width='3' height='30' rx='1.5'/><rect x='144' y='24.0' width='3' height='16' rx='1.5'/><rect x='152' y='19.0' width='3' height='26' rx='1.5'/><rect x='160' y='26.0' width='3' height='12' rx='1.5'/></svg>") center/contain no-repeat;opacity:.38;transition:opacity .3s}
+  .demo:hover .demo-art{opacity:.6}
+  .demo .pill{position:relative;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  .demo .t{position:relative;font-family:var(--serif);font-size:1.8rem;line-height:1.05;color:var(--ink)}
+  .demo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85);transform:scale(1.18);transform-origin:50% 100%;transition:transform .6s}
+  .demo-video::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(10,9,8,.82))}
+  .demo-video .pill,.demo-video .t{z-index:1;color:#f4f1ea}
+  .demo-video:hover .demo-img{transform:scale(1.24)}
 
-  .steps{display:grid;gap:0}
-  .step{display:flex;gap:1.6rem;align-items:baseline;padding:1.4rem 0;border-bottom:1px solid var(--line)}
-  .step:first-child{border-top:1px solid var(--line)}
-  .step .n{font-size:.8rem;font-weight:800;color:var(--mute);letter-spacing:.1em;min-width:2.4rem}
-  .step .b{font-size:clamp(1.05rem,2.2vw,1.4rem);font-weight:600;letter-spacing:-.01em}
-  #terms .step .n{min-width:5.2rem}
-  .build-note{margin-top:2.6rem;font-size:1.05rem;color:var(--mute);max-width:64ch;line-height:1.6}
-  .build-note b{color:var(--ink);font-weight:600}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+  .step{display:flex;flex-direction:column;gap:1.4rem;padding:1.8rem 1.6rem 2.2rem 0;border-bottom:1px solid var(--line)}
+  .step:not(:nth-child(3n+1)){padding-left:1.6rem;border-left:1px solid var(--line)}
+  .step .n{font-family:var(--serif);font-size:2.6rem;line-height:1;color:var(--accent)}
+  .step .b{font-size:1.15rem;font-weight:500;letter-spacing:-.01em;line-height:1.4}
+  .steps.terms{margin-top:3rem}
+  .steps.terms .n{font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;color:var(--ink);border:1px solid var(--ink);border-radius:999px;padding:.35rem .8rem;align-self:flex-start}
+  .build-note{margin-top:2.4rem;font-size:1.05rem;color:var(--mute);max-width:68ch;line-height:1.65}
+  .build-note b{color:var(--ink);font-weight:500}
+  .inline{color:var(--ink);border-bottom:1px solid var(--accent)}
 
-  .contact{text-align:center}
-  .contact h2{font-size:clamp(2.2rem,7vw,5rem);font-weight:800;letter-spacing:-.02em;line-height:1}
-  .contact .email{display:inline-block;margin-top:2rem;font-size:1.1rem;border-bottom:2px solid var(--ink);padding-bottom:3px}
-  .contact .cta-row{margin-top:2.2rem;display:flex;gap:1.6rem;align-items:center;justify-content:center;flex-wrap:wrap}
-  .contact .book{background:var(--ink);color:#fff;padding:.85rem 1.7rem;border-radius:999px;font-size:1rem;font-weight:600}
+  .contact{text-align:center;background:var(--ink);color:var(--bg);padding:140px 0;border-top:0}
+  .contact .eyebrow{color:#b8b1a4;margin-bottom:1.4rem}
+  .contact h2{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,9vw,8rem);letter-spacing:-.015em;line-height:.95}
+  .contact .who{margin:1.8rem auto 0;color:#c9c2b5;max-width:46ch}
+  .contact .cta-row{margin-top:2.6rem;display:flex;gap:1.8rem;align-items:center;justify-content:center;flex-wrap:wrap}
+  .contact .book{background:var(--accent);color:#fff;padding:1rem 1.9rem;border-radius:999px;font-size:1.02rem;font-weight:500;transition:transform .2s}
+  .contact .book:hover{transform:translateY(-2px)}
+  .contact .email{font-size:1.05rem;border-bottom:1px solid #8a8378;padding-bottom:3px}
 
-  footer{border-top:1px solid var(--line);padding:34px 0}
-  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
-  footer a:hover{color:var(--ink)}
+  footer{background:var(--ink);color:#a39d92;border-top:1px solid #2c2925;padding:28px 0}
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+  footer a:hover{color:#f4f1ea}
 
-  .fade{opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+  .fade{opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease}
   .fade.in{opacity:1;transform:none}
-  @media(max-width:680px){ .nav-link.mute,.nav-link.hide-sm{display:none} .nav-right{gap:1.1rem} .item{flex-direction:column;align-items:flex-start;gap:.6rem} .demos{grid-template-columns:1fr} }
+  @media(prefers-reduced-motion:reduce){.fade{opacity:1;transform:none;transition:none}}
+  @media(max-width:900px){ .split,.sec-head{grid-template-columns:1fr;gap:28px} .steps{grid-template-columns:1fr} .step,.step:not(:nth-child(3n+1)){padding:1.4rem 0;border-left:0;flex-direction:row;gap:1.2rem;align-items:baseline} .step .n{min-width:3.2rem;font-size:2rem} .steps.terms .n{min-width:auto} }
+  @media(max-width:680px){ .wrap,nav .row{padding:0 20px} .hero{padding:110px 20px 40px} .nav-link.mute,.nav-link.hide-sm{display:none} .nav-right{gap:1.1rem} .item{flex-direction:column;align-items:flex-start;gap:.9rem} .item:hover{padding-left:0} .demos{grid-template-columns:1fr} section{padding:72px 0} .press-strip{gap:1.2rem 1.8rem} .press-strip a{font-size:1.5rem} .hero .eyebrow::before,.hero .eyebrow::after{width:28px} .contact{padding:96px 0} }
+
 </style>
 </head>
 <body>
@@ -86,65 +120,76 @@
       <a class="nav-link mute" href="#process">Process</a>
       <a class="nav-link" href="#terms">Terms</a>
       <a class="nav-link hide-sm" href="engineering.html">Engineering Blog</a>
-      <a class="nav-link" href="mailto:adam@banterai.app">Contact</a>
+      <a class="nav-link nav-cta" href="mailto:adam@banterai.app">Contact</a>
     </div>
   </div>
 </nav>
 
 <header class="hero" id="top">
-  <div class="eyebrow fade">AI Product Studio</div>
-  <h1 class="fade">BANTER&nbsp;AI&nbsp;STUDIO</h1>
-  <p class="sub fade">We turn your service into an AI product you own.</p>
+  <div class="hero-deco" aria-hidden="true"></div>
+  <div class="hero-in">
+    <div class="eyebrow fade">AI Product Studio</div>
+    <h1 class="fade">BANTER&nbsp;AI&nbsp;STUDIO</h1>
+    <p class="sub fade">We turn your service into an AI product you own.</p>
+  </div>
+  <div class="wave" aria-hidden="true"></div>
 </header>
 
-<section>
-  <div class="wrap">
-    <p class="lead fade">Turn your service into an AI product. <span class="g">Own it.</span></p>
-    <p class="who fade">You already know how to do something people pay for. Today you sell it as hours. The product version does that work without you in it, and the revenue does not depend on your time.</p>
-    <p class="who fade">Don't pay an agency to learn your workflows and keep what they learn. Your expertise is the hard part. We build the software around it, and it stays yours.</p>
-    <p class="who fade">We're VC-backed founders. We've built viral AI products to millions of users and sold the companies behind them. We have done this for a private equity firm, a healthcare startup, and ourselves.</p>
-    <div class="creds fade">Ex-Uber ML · Berkeley · MIT · IIT · Google · viral-app founders</div>
+<section class="intro">
+  <div class="wrap split">
+    <div class="split-l">
+      <p class="lead fade">Turn your service into an AI product. <span class="g">Own it.</span></p>
+    </div>
+    <div class="split-r">
+      <p class="who fade">You already know how to do something people pay for. Today you sell it as hours. The product version does that work without you in it, and the revenue does not depend on your time.</p>
+      <p class="who fade">Don't pay an agency to learn your workflows and keep what they learn. Your expertise is the hard part. We build the software around it, and it stays yours.</p>
+      <p class="who fade">We're VC-backed founders. We've built viral AI products to millions of users and sold the companies behind them. We have done this for a private equity firm, a healthcare startup, and ourselves.</p>
+      <div class="creds fade">Ex-Uber ML · Berkeley · MIT · IIT · Google · viral-app founders</div>
+    </div>
   </div>
 </section>
 
 <section id="work">
   <div class="wrap">
-    <div class="eyebrow sec-eyebrow fade" style="margin-bottom:1.4rem">Selected work</div>
-    <p class="who fade" style="margin-top:0;margin-bottom:2.6rem">Some of these were our own companies. The rest started as somebody else's expertise and became a product.</p>
-
-    <div class="item fade">
-      <div><h3>CarynAI</h3><span class="hl">The #1 AI companion in the world. Super viral.</span></div>
-      <a class="press" href="https://fortune.com/2023/05/09/snapchat-influencer-launches-carynai-virtual-girlfriend-bot-openai-gpt4/" target="_blank" rel="noopener">Press ↗</a>
+    <div class="sec-head">
+      <div class="eyebrow sec-eyebrow fade">Selected work</div>
+      <p class="who intro-who fade">Some of these were our own companies. The rest started as somebody else's expertise and became a product.</p>
     </div>
+    <div class="items">
+      <div class="item fade">
+        <div><h3>CarynAI</h3><span class="hl">The #1 AI companion in the world. Super viral.</span></div>
+        <a class="press" href="https://fortune.com/2023/05/09/snapchat-influencer-launches-carynai-virtual-girlfriend-bot-openai-gpt4/" target="_blank" rel="noopener">Press ↗</a>
+      </div>
 
-    <div class="item fade">
-      <div><h3>Banter AI</h3><span class="hl">The first AI phone-call product. 1M users.</span></div>
-      <a class="press" href="https://www.wsj.com/tech/chatbots-banter-ai-forever-voices-f845e2ec" target="_blank" rel="noopener">WSJ ↗</a>
-    </div>
+      <div class="item fade">
+        <div><h3>Banter AI</h3><span class="hl">The first AI phone-call product. 1M users.</span></div>
+        <a class="press" href="https://www.wsj.com/tech/chatbots-banter-ai-forever-voices-f845e2ec" target="_blank" rel="noopener">WSJ ↗</a>
+      </div>
 
-    <div class="item fade">
-      <div><h3>AI healthcare startup</h3><span class="hl">Built their MVP — an AI caller for patients. Raised a $10M seed from Bain Capital.</span></div>
-      <span class="press" style="border:none;color:var(--mute)">Seed · $10M</span>
-    </div>
+      <div class="item fade">
+        <div><h3>AI healthcare startup</h3><span class="hl">Built their MVP — an AI caller for patients. Raised a $10M seed from Bain Capital.</span></div>
+        <span class="press stat">Seed · $10M</span>
+      </div>
 
-    <div class="item fade">
-      <div><h3>An AI care-management company</h3><span class="hl">One of 12 companies invited to the White House for the AI product we built.</span></div>
-      <span class="press" style="border:none;color:var(--mute)">White House</span>
-    </div>
+      <div class="item fade">
+        <div><h3>An AI care-management company</h3><span class="hl">One of 12 companies invited to the White House for the AI product we built.</span></div>
+        <span class="press stat">White House</span>
+      </div>
 
-    <div class="item fade">
-      <div><h3>A private-equity firm</h3><span class="hl">AI diligence tool: fed a list of companies, it found their addresses and estimated each site's land size. Saved them $32M a year.</span></div>
-      <span class="press" style="border:none;color:var(--mute)">Saved $32M/yr</span>
-    </div>
+      <div class="item fade">
+        <div><h3>A private-equity firm</h3><span class="hl">AI diligence tool: fed a list of companies, it found their addresses and estimated each site's land size. Saved them $32M a year.</span></div>
+        <span class="press stat">Saved $32M/yr</span>
+      </div>
 
-    <div class="item soon fade">
-      <div><h3>Your product</h3></div>
-      <span class="press" style="border:none;color:var(--mute)">Now booking</span>
+      <div class="item soon fade">
+        <div><h3>Your product</h3></div>
+        <span class="press stat">Now booking</span>
+      </div>
     </div>
   </div>
 </section>
 
-<section>
+<section class="seen">
   <div class="wrap">
     <div class="eyebrow sec-eyebrow fade">As seen in</div>
     <div class="press-strip fade">
@@ -161,9 +206,9 @@
   <div class="wrap">
     <div class="eyebrow sec-eyebrow fade">See it work</div>
     <div class="demos">
-      <div class="demo fade"><span class="pill">Demo</span><span class="t">Care-management agent</span></div>
-      <div class="demo fade"><span class="pill">Demo</span><span class="t">Reimbursement agent</span></div>
-      <a class="demo fade" href="https://www.youtube.com/watch?v=SY3qlladr7U" target="_blank" rel="noopener" style="cursor:pointer"><span class="pill">Bloomberg · Posthuman</span><span class="t">CarynAI on Bloomberg ↗</span></a>
+      <div class="demo fade"><span class="demo-art" aria-hidden="true"></span><span class="pill">Demo</span><span class="t">Care-management agent</span></div>
+      <div class="demo fade"><span class="demo-art" aria-hidden="true"></span><span class="pill">Demo</span><span class="t">Reimbursement agent</span></div>
+      <a class="demo demo-video fade" href="https://www.youtube.com/watch?v=SY3qlladr7U" target="_blank" rel="noopener"><img class="demo-img" src="assets/bloomberg-thumb.jpg" alt=""><span class="pill">Bloomberg · Posthuman</span><span class="t">CarynAI on Bloomberg ↗</span></a>
     </div>
   </div>
 </section>
@@ -179,7 +224,7 @@
       <div class="step fade"><span class="n">05</span><span class="b">If it's good, we build the real product for a small fixed fee.</span></div>
       <div class="step fade"><span class="n">06</span><span class="b">It ships under your name. You own it. We take a percentage of what it earns.</span></div>
     </div>
-    <p class="build-note fade">Custom RAG, proprietary voice AI, fine-tuned models, tuned for cost and speed. <b>Engineered for reliability and defensibility, so it holds up when real customers use it.</b> Read how we do it on the <a href="engineering.html" style="border-bottom:1px solid var(--ink);color:var(--ink)">engineering blog</a>.</p>
+    <p class="build-note fade">Custom RAG, proprietary voice AI, fine-tuned models, tuned for cost and speed. <b>Engineered for reliability and defensibility, so it holds up when real customers use it.</b> Read how we do it on the <a class="inline" href="engineering.html">engineering blog</a>.</p>
   </div>
 </section>
 
@@ -187,7 +232,7 @@
   <div class="wrap">
     <div class="eyebrow sec-eyebrow fade">Terms</div>
     <p class="lead fade">A small fee to build it. <span class="g">A percentage if it makes money.</span></p>
-    <div class="steps" style="margin-top:2.8rem">
+    <div class="steps terms">
       <div class="step fade"><span class="n">FEE</span><span class="b">A small fixed fee for the MVP. That is the whole cost to find out if this works.</span></div>
       <div class="step fade"><span class="n">SHARE</span><span class="b">After that we take a percentage of the revenue the product brings in.</span></div>
       <div class="step fade"><span class="n">OWN</span><span class="b">The product is yours. Your workflows, your customers, your name on it.</span></div>
@@ -197,13 +242,14 @@
 </section>
 
 <section class="contact" id="contact">
+  <div class="contact-deco" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="eyebrow sec-eyebrow fade" style="margin-bottom:1.6rem">Let's talk</div>
+    <div class="eyebrow sec-eyebrow fade">Let's talk</div>
     <h2 class="fade">Start a project</h2>
-    <p class="who fade" style="margin:1.6rem auto 0;text-align:center">Tell us what your business does. We'll tell you what the product version of it looks like.</p>
+    <p class="who fade">Tell us what your business does. We'll tell you what the product version of it looks like.</p>
     <div class="cta-row fade">
       <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call ↗</a>
-      <a class="email" style="margin-top:0" href="mailto:adam@banterai.app?subject=Project%20inquiry%20%E2%80%94%20Banter%20AI%20Studio">adam@banterai.app</a>
+      <a class="email" href="mailto:adam@banterai.app?subject=Project%20inquiry%20%E2%80%94%20Banter%20AI%20Studio">adam@banterai.app</a>
     </div>
   </div>
 </section>
