@@ -314,7 +314,7 @@ footer a:hover{color:var(--ink)}
   <div class="chrome">
     <span class="tally" aria-hidden="true"></span>
     <h1>BANTER&nbsp;AI&nbsp;STUDIO</h1>
-    <span class="tc mono" id="tc" aria-hidden="true">00:00:00:00</span>
+    <span aria-hidden="true"></span>
   </div>
   <div class="cap">
     <p class="sub" id="sub">We turn your service into an AI product you own.</p>
@@ -490,7 +490,7 @@ footer a:hover{color:var(--ink)}
   var cv=document.getElementById('orb'),cx=cv.getContext('2d'),dpr=Math.min(2,window.devicePixelRatio||1),Wd,Ht;
   function size(){var r=cv.getBoundingClientRect();Wd=r.width;Ht=r.height;cv.width=Wd*dpr;cv.height=Ht*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
   size();addEventListener('resize',size);
-  var tcEl=document.getElementById('tc'),bars=[],wb=document.getElementById('wavebar');
+  var bars=[],wb=document.getElementById('wavebar');
   for(var i=0;i<96;i++){var s=document.createElement('span');wb.appendChild(s);bars.push(s)}
   function n(i,t){return Math.sin(i*1.7+t*2.1)*.5+Math.sin(i*.63-t*3.3)*.3+Math.sin(i*3.1+t*.7)*.2}
   function geo(){
@@ -527,7 +527,6 @@ footer a:hover{color:var(--ink)}
     // a slow highlight that travels round the rim, so the rotation reads even on a still frame
     var hg=T*.35;cx.lineWidth=2.4;cx.strokeStyle='rgba(255,190,150,.55)';cx.stroke();
     cx.beginPath();cx.arc(ox,oy,R,hg,hg+1.1);cx.strokeStyle='rgba(255,236,220,.95)';cx.lineWidth=3;cx.shadowColor='#ffb08a';cx.shadowBlur=24;cx.stroke();cx.shadowBlur=0;
-    var fr=Math.floor((T*25)%25),sec=Math.floor(T)+734;tcEl.textContent='00:'+String(Math.floor(sec/60)%60).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')+':'+String(fr).padStart(2,'0');
     bars.forEach(function(b,i){var v=Math.abs(n(i*.9,T*2.4))*0.8+Math.abs(Math.sin(i*.21+T))*0.2;b.style.height=(8+v*112*(0.55+0.45*Math.sin(i/96*Math.PI)))+'px'});
   }
   var t0=performance.now(),seek=null,base=fin?6:0;
