@@ -1,170 +1,269 @@
-<!-- Banter AI Studio — engineering notes. banterai.studio/blog -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banter AI Studio — Engineering Notes</title>
+<title>Banter AI Studio, Engineering Notes</title>
 <meta name="description" content="Field notes from building defensible AI products. Voice latency, phone-tree agents, clinical safety, production RAG.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  :root{ --ink:#161412; --mute:#5f5a52; --faint:#a39d92; --line:#d9d3c6; --bg:#f4f1ea; --card:#ebe6db; --accent:#b8381d;
-    --serif:"Instrument Serif",Georgia,serif; --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace; }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{font-family:var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45}
-  a{color:inherit;text-decoration:none}
-  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500}
-  .wrap{max-width:760px;margin:0 auto;padding:0 40px}
-
-  nav{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(244,241,234,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  nav .row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1240px;margin:0 auto;padding:0 40px}
-  .mark{display:flex;align-items:center;gap:.55rem;font-weight:600;font-size:.98rem;letter-spacing:-.01em}
-  .mark .dot{width:14px;height:14px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;display:inline-block;transform:rotate(-45deg)}
-  .nav-link{font-size:.9rem;font-weight:500;color:var(--mute);transition:color .2s}
-  .nav-link:hover{color:var(--ink)}
-
-  header.top{padding:150px 0 56px}
-  header.top .eyebrow{display:flex;align-items:center;gap:1rem;color:var(--ink)}
-  header.top .eyebrow::after{content:"";flex:1;height:1px;background:var(--ink)}
-  header.top h1{margin-top:1.8rem;font-family:var(--serif);font-weight:400;font-size:clamp(3rem,8vw,5.6rem);letter-spacing:-.015em;line-height:.95}
-  header.top p{margin-top:1.6rem;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,2.2vw,1.65rem);color:var(--ink);max-width:40ch;line-height:1.3}
-
-  footer{background:var(--ink);color:#a39d92;padding:28px 0;margin-top:60px}
-  footer .wrap{max-width:1240px}
-  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
-  footer a:hover{color:#f4f1ea}
-
-  .fade{opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease}
-  .fade.in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){.fade{opacity:1;transform:none;transition:none}}
-  @media(max-width:680px){ .wrap,nav .row{padding:0 20px} header.top{padding:112px 0 36px} }
-  header.top .wrap{border-bottom:1px solid var(--ink);padding-bottom:56px}
-  header.top{padding-bottom:0}
-  article{padding:64px 0;border-top:1px solid var(--line);scroll-margin-top:72px}
-  header.top + .wrap article:first-child{border-top:0}
-  article .tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-  article h2{margin-top:1rem;font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,4.6vw,3.1rem);letter-spacing:-.01em;line-height:1.02}
-  article p{margin-top:1.3rem;font-size:1.1rem;color:#2c2925;line-height:1.72;max-width:64ch}
-  article h2 + p{font-size:1.22rem;color:var(--ink)}
-  article p .lead-in{color:var(--ink);font-weight:600;background:linear-gradient(transparent 62%,rgba(184,56,29,.16) 62%)}
-
-  .endcap{padding:80px 0;border-top:1px solid var(--line);text-align:center}
-  .endcap h3{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,5vw,3.2rem)}
-  .endcap .book{display:inline-block;margin-top:1.8rem;background:var(--accent);color:#fff;padding:1rem 1.9rem;border-radius:999px;font-size:1rem;font-weight:500}
-</style>
+<link rel="stylesheet" href="assets/blog.css">
 </head>
 <body>
-
 <nav>
   <div class="row">
     <a class="mark" href="index.html"><span class="dot"></span> Banter AI Studio</a>
-    <a class="nav-link" href="engineering.html">← All posts</a>
+    <div class="nav-right">
+      <a class="nav-link hide-sm" href="index.html">Studio</a>
+      <a class="nav-link on" href="engineering.html">Engineering Blog</a>
+      <a class="nav-link nav-cta" href="mailto:adam@banterai.app">Contact</a>
+    </div>
   </div>
 </nav>
-
-<header class="top">
+<header class="top" id="top">
   <div class="wrap">
-    <div class="eyebrow">Engineering notes</div>
-    <h1>Notes from the build</h1>
-    <p>The unglamorous parts of making AI products that hold up. Mostly the stuff that doesn't fit in a demo.</p>
+    <div>
+      <div class="mono eyebrow">Engineering notes</div>
+      <h1>Notes from the build</h1>
+      <p>How we make AI products hold up after launch. Most of it never shows in a demo.</p>
+    </div>
+    <canvas class="eclipse" data-r=".27" aria-hidden="true"></canvas>
   </div>
 </header>
-
-<div class="wrap">
-
+<div class="wrap read">
+  <aside class="toc" aria-label="Articles">
+    <div class="mono">In this issue</div>
+    <a href="#latency"><span>01</span><span>Sub-250 ms, or it isn&#x27;t a conversation</span></a>
+    <a href="#phone-tree"><span>02</span><span>Getting an AI agent through a payer phone tree</span></a>
+    <a href="#double-dose"><span>03</span><span>The double-dose problem</span></a>
+    <a href="#rag"><span>04</span><span>RAG that holds up in production</span></a>
+    <a href="#constellation"><span>05</span><span>The listener constellation: one voice, a dozen models</span></a>
+    <a href="#supervision"><span>06</span><span>The nurse decides</span></a>
+    <a href="#data-layer"><span>07</span><span>The data layer: what you own when you own the calls</span></a>
+    <a href="#agents"><span>08</span><span>The work happens while you&#x27;re still talking</span></a>
+    <a href="#ehr"><span>09</span><span>Documenting into any EHR without an integration project</span></a>
+  </aside>
+  <div>
   <article id="latency">
-    <div class="tag">Voice AI · Latency · Jun 2026</div>
-    <h2>Sub-250ms, or it isn't a conversation</h2>
-    <p>A demo voice agent can take two seconds to answer and still look great in a screen recording. Put a real person on the line — a 74-year-old on a care call, a billing rep at a payer — and two seconds is a disaster. They talk over it. They hang up. They decide it's broken.</p>
-    <p>So the number we actually chase is end-to-end latency under <span class="lead-in">~250 milliseconds</span> — the threshold where a back-and-forth starts to feel like a conversation instead of a walkie-talkie.</p>
-    <p>Getting there means treating the whole pipeline as one latency budget, not a sequence of API calls. We stream speech-to-text and start reasoning on partial transcripts instead of waiting for the caller to finish. We pick a different model for each stage — the fast one where it's on the critical path, the smart one where we can hide it. We stream the reply into text-to-speech token by token, so the first syllable is playing while the rest is still being written. And we handle barge-in: the instant the caller speaks, the agent shuts up, the way a human would.</p>
-    <p>That gets us roughly 4–6x faster than typical healthcare voice AI — fast enough that a patient with hearing aids and cognitive load doesn't feel a delay. None of it shows up in a demo. All of it shows up on call number ten thousand. That's the part you're actually paying for.</p>
+    <div class="kick mono"><span>01</span><span class="tag">Voice AI · Latency</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>Sub-250 ms, or it isn&#x27;t a conversation</h2>
+    <p class="dek">People leave very short gaps between turns, so we treat the whole voice pipeline as one latency budget.</p>
+    <div class="body">
+      <p>A demo voice agent can take two seconds to answer and still look fine in a screen recording. Put a real person on the line, a 74-year-old on a care call or a billing rep at a payer, and two seconds breaks the call. They talk over the agent. They hang up. They decide it is broken.</p>
+      <p>People expect fast replies because they get them from each other. A 2009 study in PNAS recorded conversations in 10 languages, from small indigenous communities to major world languages. Every one of them avoided overlapping talk and kept the silence between turns short, and each language's average gap sat within 250 ms of the cross-language mean (<a href="https://cognitionandculture.net/blogs/icci-blog/universals-and-cultural-variation-in-turn-taking-in-conversation">Stivers et al.</a>). So the number we chase is end-to-end latency under <span class="lead-in">about 250 milliseconds</span>, from the moment the caller stops talking to the first syllable of the reply.</p>
+      <figure class="fig" aria-hidden="true"><svg viewBox="0 0 720 230" width="100%"><text x="150.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">0</text><line x1="150.0" y1="26" x2="150.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="240.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">250</text><line x1="240.0" y1="26" x2="240.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="330.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">500</text><line x1="330.0" y1="26" x2="330.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="420.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">750</text><line x1="420.0" y1="26" x2="420.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="510.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">1000</text><line x1="510.0" y1="26" x2="510.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="600.0" y="18" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">1250</text><line x1="600.0" y1="26" x2="600.0" y2="210" stroke="rgba(246,241,234,.16)" stroke-dasharray="2 4"/><text x="0" y="61" fill="#a59d91" font-family="Geist" font-size="14">Wait then call</text><rect x="150.0" y="44" width="148.2" height="26" rx="6" fill="rgba(246,241,234,.06)" stroke="rgba(246,241,234,.16)"/><text x="160.0" y="61" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1">WAIT FOR SILENCE</text><rect x="301.2" y="44" width="198.60000000000002" height="26" rx="6" fill="rgba(246,241,234,.06)" stroke="rgba(246,241,234,.16)"/><text x="311.2" y="61" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1">MODEL</text><rect x="502.8" y="44" width="94.19999999999999" height="26" rx="6" fill="rgba(246,241,234,.06)" stroke="rgba(246,241,234,.16)"/><text x="512.8" y="61" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1">SPEAK</text><text x="0" y="103" fill="#f6f1ea" font-family="Geist" font-size="14">Streaming STT</text><rect x="150.0" y="86" width="58.19999999999999" height="26" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><text x="0" y="145" fill="#f6f1ea" font-family="Geist" font-size="14">Reason on partials</text><rect x="175.2" y="128" width="49.19999999999999" height="26" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><text x="0" y="187" fill="#f6f1ea" font-family="Geist" font-size="14">Stream TTS</text><rect x="213.0" y="170" width="22.19999999999999" height="26" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><line x1="240.0" y1="26" x2="240.0" y2="214" stroke="#ff5a2a" stroke-width="2"/><text x="248.0" y="226" fill="#ff5a2a" font-family="Geist Mono" font-size="12" letter-spacing="1">~250 MS</text></svg><figcaption>Where the time goes. A pipeline that waits for silence and then calls one model, against stages that overlap. Bar lengths are illustrative.</figcaption></figure>
+      <div class="stat"><b>~250 ms</b><span>Our target from the caller&#x27;s last word to the agent&#x27;s first syllable</span></div>
+      <h3>Where the time goes</h3>
+      <p>A naive pipeline runs each stage in order, and every stage waits for the one before it to finish.</p>
+      <ul><li>Endpointing. The system has to decide the caller is done. Waiting for a long silence is safe and slow. Cutting in early interrupts people mid-thought.</li><li>Recognition. Batch speech-to-text starts only after the audio ends.</li><li>Reasoning. The model reads the whole prompt before it produces the first token.</li><li>Synthesis. Text-to-speech waits for a full sentence before it plays anything.</li></ul>
+      <p>Add those up and you get the two-second pause that makes people talk over the agent.</p>
+      <h3>How we cut it</h3>
+      <p>We stream audio into speech-to-text and read interim results as they arrive. Google's Speech-to-Text documentation describes the split we rely on. An interim result is the current guess for a stretch of audio and may change, and a final result is the last, best guess for it (<a href="https://docs.cloud.google.com/speech-to-text/docs/v1/speech-to-text-requests">Google Cloud docs</a>). We start reasoning on the partial transcript, so most of the thinking is done by the time the final result lands.</p>
+      <p>We pick a different model for each stage. The fast one sits on the critical path. The larger one runs where we can hide its latency. We stream the reply into text-to-speech token by token, so the first syllable plays while the rest of the sentence is still being written.</p>
+      <p>We also handle barge-in. When the caller starts to speak, the agent stops its own audio and listens, the way a person would. Without this, the agent keeps talking over a patient who is trying to correct it.</p>
+      <h3>What it gets us</h3>
+      <p>Our agents run roughly <span class="lead-in">4 to 6x faster</span> than typical healthcare voice AI. A patient with hearing aids and a lot on their mind does not notice a delay. None of this shows up in a demo. It shows up on call number ten thousand, when a patient decides whether to keep picking up.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://cognitionandculture.net/blogs/icci-blog/universals-and-cultural-variation-in-turn-taking-in-conversation" target="_blank" rel="noopener">Stivers et al., PNAS 2009, Universals and cultural variation in turn-taking in conversation</a></li><li><a href="https://docs.cloud.google.com/speech-to-text/docs/v1/speech-to-text-requests" target="_blank" rel="noopener">Google Cloud, Speech-to-Text requests: streaming recognition and interim results</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="phone-tree">
-    <div class="tag">Voice agents · Reliability · Jun 2026</div>
-    <h2>Teaching an AI to beat a payer phone tree</h2>
-    <p>One of the AI healthcare startups we built for had a brutally unglamorous problem: getting paid. Visiting-nurse reimbursement means calling insurers, sitting through phone trees, waiting on hold, answering the same questions a thousand times a day. Perfect work to hand to an agent — if it can survive contact with a real IVR.</p>
-    <p>Phone trees are hostile. They're all different, they change without warning, and they mix DTMF menus ("press 3"), speech prompts ("say your member ID"), dead air, and hold music that sounds exactly like a human picking up. A naive agent gets lost in about four seconds.</p>
-    <p>So we don't treat it as a chat problem — we treat it as a <span class="lead-in">control problem</span>. The agent runs a state machine over the call: figure out whether it's at a menu, a prompt, on hold, or talking to a live human; emit tones or speech accordingly; and keep a model of where it sits in the tree so it can recover when the tree shifts under it. We detect hold-music vs. human pickup so it doesn't start pitching elevator music. And we draw a hard line on escalation — when confidence drops, it hands off to a person instead of guessing on something that decides whether a nurse gets paid.</p>
-    <p>The v1 that walks one happy path is a weekend. The version that holds up across hundreds of payers is the actual product.</p>
+    <div class="kick mono"><span>02</span><span class="tag">Voice agents · Reliability</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>Getting an AI agent through a payer phone tree</h2>
+    <p class="dek">We run reimbursement calls as a control problem, with a state machine, real keypad tones and a confidence line that hands off to a person.</p>
+    <div class="body">
+      <p>One of the AI healthcare startups we built for needed to get paid faster. Visiting-nurse reimbursement means calling insurers, sitting through phone trees, waiting on hold and answering the same questions many times a day. An agent can do this work if it survives contact with a real interactive voice response system, or IVR.</p>
+      <p>IVRs are hard on agents. Every payer's tree is different and changes without notice. One call mixes keypad menus ("press 3"), speech prompts ("say your member ID"), dead air, and hold music that can sound like a person picking up. A naive agent loses its place within seconds.</p>
+      <figure class="fig" aria-hidden="true"><svg viewBox="0 0 720 150" width="100%"><line x1="84" y1="50" x2="246" y2="50" stroke="#ff5a2a" stroke-width="2"/><circle cx="70" cy="50" r="12" fill="#100d0b" stroke="#ff5a2a" stroke-width="2"/><text x="70" y="96" fill="#f6f1ea" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">MENU</text><text x="70" y="120" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="middle">Press 3</text><line x1="274" y1="50" x2="436" y2="50" stroke="#ff5a2a" stroke-width="2"/><circle cx="260" cy="50" r="12" fill="#100d0b" stroke="#ff5a2a" stroke-width="2"/><text x="260" y="96" fill="#f6f1ea" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">PROMPT</text><text x="260" y="120" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="middle">Say member ID</text><line x1="464" y1="50" x2="626" y2="50" stroke="#ff5a2a" stroke-width="2"/><circle cx="450" cy="50" r="12" fill="#100d0b" stroke="#ff5a2a" stroke-width="2"/><text x="450" y="96" fill="#f6f1ea" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">HOLD</text><text x="450" y="120" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="middle">Music, not a human</text><circle cx="640" cy="50" r="12" fill="#ff5a2a" stroke="#ff5a2a" stroke-width="2"/><text x="640" y="96" fill="#f6f1ea" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">HUMAN</text><text x="640" y="120" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="middle">Live rep</text><path d="M260 30 q 95 -34 190 0" fill="none" stroke="rgba(246,241,234,.16)" stroke-dasharray="3 4"/><text x="355" y="12" fill="#a59d91" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="middle">RECOVER WHEN THE TREE SHIFTS</text></svg><figcaption>The call as a state machine. The agent classifies the audio, picks the state, and acts: tones at a menu, speech at a prompt, silence on hold.</figcaption></figure>
+      <h3>A state machine, not a chat</h3>
+      <p>We treat the call as a <span class="lead-in">control problem</span>. The agent runs a state machine over the call. At each moment it classifies the audio as a menu, a prompt, hold, or a live human, and acts for that state. It keeps a model of where it sits in the tree, so when the payer moves an option it can back up and recover instead of guessing.</p>
+      <h3>Keypresses are tones</h3>
+      <p>Pressing 3 on a phone sends two tones at once. DTMF signaling, standardized in ITU-T Recommendation Q.23, uses a low group of 697, 770, 852 and 941 Hz and a high group of 1209, 1336, 1477 and 1633 Hz. The digit 3 is 697 Hz plus 1477 Hz (<a href="https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling">DTMF</a>). Many IVR menus only listen for tones, so the agent plays the tone pair on the audio channel instead of saying "three".</p>
+      <h3>Hold music is not a person</h3>
+      <p>Telling hold music from a human pickup is its own classifier. Twilio's answering machine detection shows the shape of the problem. It measures stretches of speech and silence, and by default it treats a speech segment longer than 2400 ms as a likely machine and 1200 ms of silence as the end of a segment (<a href="https://www.twilio.com/docs/voice/answering-machine-detection">Twilio docs</a>). A recorded loop talks in long, regular runs. A person says a short greeting and stops to wait for an answer. Timing features of this kind keep the agent from pitching its questions to elevator music.</p>
+      <p>The agent also has a hard escalation line. When its confidence drops below the threshold, it hands the call to a person. Whether a nurse gets paid is not something to guess on.</p>
+      <p>A version that walks one happy path takes a weekend. The version that holds up across hundreds of payers is the product.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling" target="_blank" rel="noopener">Dual-tone multi-frequency signaling (ITU-T Q.23 frequencies)</a></li><li><a href="https://www.twilio.com/docs/voice/answering-machine-detection" target="_blank" rel="noopener">Twilio Docs, Answering Machine Detection</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="double-dose">
-    <div class="tag">Clinical AI · Evals · Jun 2026</div>
+    <div class="kick mono"><span>03</span><span class="tag">Clinical AI · Evals</span><span>Jun 2026</span><span>2 min read</span></div>
     <h2>The double-dose problem</h2>
-    <p>Here's a failure mode that won't show in a demo. On a care call, a patient mentions they've been tired and a little dizzy. The AI dutifully reviews their meds — and asks about the ones with nothing to do with those symptoms. It never checks the blood-pressure med. The patient was taking twice their prescribed dose of lisinopril. The AI missed the only thing that mattered.</p>
-    <p>A chatbot answers questions. A clinical agent has to ask the right ones. The difference is a layer most people skip: a mapping from reported symptoms to the drug classes most likely to cause them, so the model <span class="lead-in">raises</span> — not lowers — the priority of probing the dangerous one. Dizziness and fatigue should make it lean harder on antihypertensives, anticoagulants, insulin. That's the catch that keeps someone out of the ER.</p>
-    <p>You don't get that from a better prompt. You get it from evals run against real call transcripts, scoring whether the agent surfaced the actual risk — not whether it sounded fluent. Fluent is easy. Correct, on the calls that matter, is the whole job. It's also where defensibility actually lives.</p>
+    <p class="dek">A clinical agent has to ask the right question, and evals on real transcripts are how we prove it does.</p>
+    <div class="body">
+      <p>Here is a failure a demo will not show. On a care call, a patient says they have been tired and a little dizzy. The AI reviews their medications and asks about the ones unrelated to those symptoms. It never checks the blood pressure medication. The patient had been taking twice their prescribed dose of lisinopril. The AI missed the one thing that mattered.</p>
+      <h3>Why dizziness points at the blood pressure pill</h3>
+      <p>Lisinopril lowers blood pressure. MedlinePlus lists dizziness as a common side effect and lists lightheadedness and fainting among the signs of an overdose (<a href="https://medlineplus.gov/druginfo/meds/a692051.html">MedlinePlus</a>). In an older patient, a double dose can drop blood pressure far enough to cause a fall. The CDC reports that over 14 million adults aged 65 and older, 1 in 4, report falling every year (<a href="https://www.cdc.gov/falls/data-research/index.html">CDC</a>).</p>
+      <div class="stat"><b>1 in 4</b><span>Adults 65 and older who report a fall each year, per the CDC</span></div>
+      <h3>A map from symptoms to drug classes</h3>
+      <p>A chatbot answers questions. A clinical agent has to ask them. The layer most teams skip is a map from reported symptoms to the drug classes most likely to cause them. With that map, dizziness and fatigue <span class="lead-in">raise</span> the priority of asking about antihypertensives, anticoagulants and insulin, so the agent probes the dangerous drug first. That question is the one that keeps someone out of the ER.</p>
+      <p>Keep the map as reviewable data, outside the prompt. A clinician can then read it line by line and change it without anyone touching the model.</p>
+      <h3>Evals that score the catch</h3>
+      <p>A better prompt will not get you this. Evals will. We run the agent against real call transcripts and score one thing, whether it surfaced the actual risk. Fluency earns no points. A test case for this problem holds the following.</p>
+      <ul><li>The transcript up to the moment the patient mentions symptoms.</li><li>The patient's medication list.</li><li>The expected behavior, here a question about the lisinopril dose before the call moves on.</li></ul>
+      <p>Run the same case many times. A model that asks the right question four times out of five still misses the fifth patient, so track the rate across repeated runs and treat any miss on a safety case as a release blocker. Turn every real miss found in production into a new test case. The set then grows with the failures that matter.</p>
+      <p>A fluent agent is easy to build. An agent that is correct on the calls that matter is the job, and it is also where the product becomes defensible.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://medlineplus.gov/druginfo/meds/a692051.html" target="_blank" rel="noopener">MedlinePlus, Lisinopril drug information</a></li><li><a href="https://www.cdc.gov/falls/data-research/index.html" target="_blank" rel="noopener">CDC, Older adult falls data</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="rag">
-    <div class="tag">RAG · Cost &amp; speed · Jun 2026</div>
-    <h2>RAG that doesn't fall over in production</h2>
-    <p>Anyone can stand up a RAG demo: embed some docs, stuff the top chunks into a prompt, ship a chatbot. It works great until it's in front of real users with real stakes — a PE team deciding whether to pull the trigger on an acquisition, where one confident-but-wrong answer is expensive.</p>
-    <p>The diligence tool we built for a private-equity firm had to read mountains of target-company material and surface the things that move a deal. "Pretty good" wasn't acceptable, so most of the work was the unsexy part: retrieval quality, grounding every claim to a source so a human can verify it, and an eval harness that catches regressions before they reach the client.</p>
-    <p>Then there's cost and speed. Naively, you pay top-model prices on every query and wait. We push the hot path onto smaller fine-tuned models, cache aggressively, and save the expensive model for the genuinely hard calls — same output quality, a fraction of the bill and the latency. That tool ended up saving the firm around <span class="lead-in">$32M a year</span> — not because the model was magic, but because the pipeline around it was built to be trusted.</p>
-    <p>That's the throughline on all of this: a v1 is easy now. Reliable, defensible, and affordable at scale is the hard part. That's what we do.</p>
+    <div class="kick mono"><span>04</span><span class="tag">RAG · Cost &amp; speed</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>RAG that holds up in production</h2>
+    <p class="dek">Most of the work in a production RAG system goes into retrieval quality, grounding, evals and cost.</p>
+    <div class="body">
+      <p>Anyone can build a RAG demo. Embed some documents, put the top chunks into a prompt, ship a chatbot. It works until people with real stakes depend on it, like a private equity team deciding whether to buy a company, where one confident wrong answer is expensive.</p>
+      <p>The diligence tool we built for a private equity firm read large amounts of target-company material and surfaced what could move a deal. "Pretty good" was not acceptable. Most of the work went into retrieval quality, grounding every claim to a source a person can check, and an eval harness that catches regressions before they reach the client.</p>
+      <h3>Hybrid retrieval</h3>
+      <p>Embeddings find passages with similar meaning. They are weak on exact strings like a company name, a parcel number or a clause reference. BM25, the ranking function from the Okapi system, scores documents on how often the query terms appear, with a length normalization parameter b that is usually set to 0.75 (<a href="https://en.wikipedia.org/wiki/Okapi_BM25">BM25</a>). We run both searches, merge the two ranked lists with rank fusion, and rerank the top results.</p>
+      <p>Anthropic published numbers for this pattern. Adding context to chunks before indexing, searching with both embeddings and BM25, and reranking cut their top-20 retrieval failure rate from 5.7% to 1.9% (<a href="https://www.anthropic.com/news/contextual-retrieval">Contextual Retrieval</a>).</p>
+      <div class="stat"><b>5.7% to 1.9%</b><span>Top-20 retrieval failures in Anthropic&#x27;s tests with hybrid search and reranking</span></div>
+      <h3>Grounding and evals</h3>
+      <p>Every claim in an answer links to the passage it came from, so an analyst can verify it before it goes into a memo. The eval set holds questions with known answers and known source passages. A change to chunking, prompts or models ships only if retrieval and answer scores hold.</p>
+      <h3>Cost and speed</h3>
+      <p>A naive setup pays top-model prices on every query and waits for them. We push the hot path onto smaller fine-tuned models, cache aggressively, and save the expensive model for the hard calls. Research on model cascades shows how much room there is. FrugalGPT learned which model to call for each query and matched GPT-4's performance with up to 98% lower cost (<a href="https://arxiv.org/abs/2305.05176">FrugalGPT</a>).</p>
+      <p>The tool ended up saving the firm about <span class="lead-in">$32M a year</span>. That came from the pipeline around the model, which made the output something the team could trust.</p>
+      <p>A v1 is easy now. Making it reliable, defensible and affordable at scale is the hard part, and it is the work we do.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://en.wikipedia.org/wiki/Okapi_BM25" target="_blank" rel="noopener">Okapi BM25</a></li><li><a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank" rel="noopener">Anthropic, Introducing Contextual Retrieval</a></li><li><a href="https://arxiv.org/abs/2305.05176" target="_blank" rel="noopener">Chen, Zaharia, Zou, FrugalGPT (arXiv 2305.05176)</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="constellation">
-    <div class="tag">Voice AI · Architecture · Jun 2026</div>
-    <h2>The listener constellation: one voice, a dozen AIs</h2>
-    <p>Most healthcare voice AI is a single model on a phone line. It's fine in the middle of a conversation and falls apart at the edges — the moment a patient mentions chest pain, trails off mid-sentence, or quietly admits they stopped taking a med.</p>
-    <p>So we don't run one AI. We run a <span class="lead-in">constellation.</span> One main model talks to the patient. Behind it, a dozen specialized listeners watch the same transcript in parallel — each obsessed with one thing. A medication listener tracks drug names, doses, and "I forgot what this one's for." An emergency listener watches for chest pain, stroke signs, a fall. Cognitive, emotion, symptom, social, environment, service — each its own model, each tuned to catch what a generalist would miss.</p>
-    <p>The listeners don't just observe — they inject. Each can push context into the main model through a priority queue at one of four levels: background, queued, critical, and <span class="lead-in">immediate interrupt</span> — stop the main model mid-word, reserved for emergencies. When the emergency listener fires, it cuts the conversation, triggers the 911 protocol, notifies family, and pre-compiles the patient's history for EMS.</p>
-    <p>One voice on the phone. A dozen AIs behind it, none of which the patient ever sees. And because the listeners are modular, we add a new one without retraining the model that's talking. That's the part a single prompt can't touch — and it's why one nurse can stand behind ten times the panel: the swarm does the catching, the nurse makes the calls that need a human.</p>
+    <div class="kick mono"><span>05</span><span class="tag">Voice AI · Architecture</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>The listener constellation: one voice, a dozen models</h2>
+    <p class="dek">One model talks to the patient while a dozen listeners watch the same transcript and push context in by priority.</p>
+    <div class="body">
+      <p>Most healthcare voice AI is a single model on a phone line. It does fine in the middle of a conversation and fails at the edges, when a patient mentions chest pain, trails off mid-sentence, or quietly admits they stopped taking a medication.</p>
+      <p>We run a <span class="lead-in">constellation</span> instead. One main model talks to the patient. Behind it, a dozen specialized listeners read the same transcript in parallel, and each one watches for a single thing.</p>
+      <figure class="fig" aria-hidden="true"><svg viewBox="0 0 720 360" width="100%"><line x1="360" y1="180" x2="360" y2="40" stroke="#ff5a2a" stroke-width="2"/><circle cx="360" cy="40" r="7" fill="#ff5a2a" stroke="#ff5a2a"/><text x="360" y="26" fill="#f6f1ea" font-family="Geist" font-size="14" text-anchor="middle">Medication</text><line x1="360" y1="180" x2="537" y2="81" stroke="#ff5a2a" stroke-width="2"/><circle cx="537" cy="81" r="7" fill="#ff5a2a" stroke="#ff5a2a"/><text x="551" y="67" fill="#f6f1ea" font-family="Geist" font-size="14" text-anchor="start">Emergency</text><line x1="360" y1="180" x2="610" y2="180" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="610" cy="180" r="5" fill="#100d0b" stroke="#a59d91"/><text x="624" y="185" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="start">Cognitive</text><line x1="360" y1="180" x2="537" y2="279" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="537" cy="279" r="5" fill="#100d0b" stroke="#a59d91"/><text x="551" y="303" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="start">Emotion</text><line x1="360" y1="180" x2="360" y2="320" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="360" cy="320" r="5" fill="#100d0b" stroke="#a59d91"/><text x="360" y="344" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="middle">Symptom</text><line x1="360" y1="180" x2="183" y2="279" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="183" cy="279" r="5" fill="#100d0b" stroke="#a59d91"/><text x="169" y="303" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="end">Social</text><line x1="360" y1="180" x2="110" y2="180" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="110" cy="180" r="5" fill="#100d0b" stroke="#a59d91"/><text x="96" y="185" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="end">Environment</text><line x1="360" y1="180" x2="183" y2="81" stroke="rgba(246,241,234,.16)" stroke-width="1"/><circle cx="183" cy="81" r="5" fill="#100d0b" stroke="#a59d91"/><text x="169" y="67" fill="#a59d91" font-family="Geist" font-size="14" text-anchor="end">Service</text><circle cx="360" cy="180" r="52" fill="#120705" stroke="#ff5a2a" stroke-width="2"/><text x="360" y="177" fill="#f6f1ea" font-family="Geist" font-size="14" font-weight="600" text-anchor="middle">Main</text><text x="360" y="195" fill="#f6f1ea" font-family="Geist" font-size="14" font-weight="600" text-anchor="middle">model</text></svg><figcaption>One model talks. Eight of the listeners shown here watch the same transcript, and any of them can push context to the main model.</figcaption></figure>
+      <ul><li>The medication listener tracks drug names, doses, and lines like "I forgot what this one's for".</li><li>The emergency listener watches for chest pain, stroke signs and falls.</li><li>Cognitive, emotion, symptom, social, environment and service listeners each watch their own signal.</li></ul>
+      <p>Each listener is its own model, tuned to catch what a generalist misses.</p>
+      <h3>Four priority levels</h3>
+      <p>Listeners do more than observe. Each one can push context into the main model through a priority queue with four levels, background, queued, critical and immediate interrupt. Higher levels reach the main model sooner. An immediate interrupt stops the main model mid-word and is reserved for emergencies.</p>
+      <h3>What an interrupt has to do</h3>
+      <p>Preemption is the hard part of this design. When an interrupt arrives, the reply in progress is already partly spoken. The system has to stop text-to-speech playback, throw away the rest of the generated reply, and prompt the main model again with the new context at the top. Anything less and the agent finishes a cheerful sentence about the weather after the patient said their chest hurts.</p>
+      <p>Listeners also fire more than once on the same signal, because every new transcript chunk gets re-read. Give each event a key, such as the listener, the signal and the call, and drop repeats. Otherwise one mention of a missed pill fills the queue.</p>
+      <p>Run the listeners as separate workers that subscribe to the transcript stream, and keep them stateless between chunks except for what they write to the call record. One slow listener then cannot delay the others or the main model, and a crashed listener restarts without dropping the call.</p>
+      <p>When the emergency listener fires, it cuts the conversation, starts the 911 protocol, notifies family and pre-compiles the patient's history for EMS.</p>
+      <h3>Why this shape</h3>
+      <p>The patient hears one voice and never sees the models behind it. Because the listeners are modular, we add a new one without retraining the model that talks. A single prompt cannot do that. It is also why one nurse can stand behind ten times the panel. The listeners do the catching, and the nurse makes the calls that need a human.</p>
+    </div>
+    
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="supervision">
-    <div class="tag">Clinical AI · Supervision · Jun 2026</div>
-    <h2>The nurse is the law</h2>
-    <p>Clinician-supervised isn't a compliance checkbox we bolt on at the end. It's the architecture.</p>
-    <p>Medicare care management requires a human in the loop — and so does trust. Patients and clinicians aren't going to hand their health to a black box. So we built the whole system around one rule: <span class="lead-in">the nurse is the law.</span> The AI listens, extracts, drafts, and flags. It never makes the clinical decision. Every action it takes is reviewable, attributable, and escalatable to the person whose license is on the line.</p>
-    <p>That sounds like a constraint. It's actually what makes the rest possible. Because the human stays the decision-maker, we can let the AI be aggressive at the parts it's good at — catching the double-dose, surfacing the risk, writing the note — without betting a patient's safety on the model being right. The AI's job is to make sure nothing important reaches the nurse late, and nothing unimportant reaches them at all.</p>
-    <p>Defensible AI in healthcare isn't the model. It's the supervision layer around it.</p>
+    <div class="kick mono"><span>06</span><span class="tag">Clinical AI · Supervision</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>The nurse decides</h2>
+    <p class="dek">The AI drafts and flags, a licensed clinician makes the decision, and we built the whole system around that rule.</p>
+    <div class="body">
+      <p>We did not add clinician supervision at the end to pass a compliance review. It is the architecture.</p>
+      <h3>What Medicare requires</h3>
+      <p>Medicare chronic care management is built around a supervising practitioner. The CMS booklet on these services says eligible patients have two or more chronic conditions expected to last at least 12 months, and practitioners bill for at least 20 minutes of care coordination a month. Clinical staff work under "general supervision", which means the billing practitioner directs and controls the service without being physically present (<a href="https://www.cms.gov/outreach-and-education/medicare-learning-network-mln/mlnproducts/downloads/chroniccaremanagement.pdf">CMS MLN909188</a>).</p>
+      <div class="stat"><b>20 min</b><span>Minimum monthly care coordination for Medicare chronic care management</span></div>
+      <p>The same booklet assigns the clinical staff codes, CPT 99490, 99439, 99487 and 99489, to general supervision under the physician fee schedule. Physicians, nurse practitioners, physician assistants, clinical nurse specialists and certified nurse-midwives can bill these services, and clinical staff deliver much of the work under their direction. An AI agent fits into that structure as a tool the clinical staff use. It does not replace the person the rules are written around.</p>
+      <p>Trust needs the same structure. Patients and clinicians will not hand their health to a black box. So the system follows one rule, <span class="lead-in">the nurse decides</span>. The AI listens, extracts, drafts and flags. It never makes the clinical decision.</p>
+      <h3>What that rule means in the software</h3>
+      <ul><li>Reviewable. The nurse sees every action the AI proposes before it changes the care plan.</li><li>Attributable. Each flag carries the transcript lines that triggered it, so the nurse can check the evidence before acting.</li><li>Escalatable. Any item can go to the person whose license is on the line.</li></ul>
+      <p>This sounds like a limit. It is what makes the rest possible. Because a human makes the decision, we can let the AI be aggressive where it is strong, catching the double dose, surfacing risk, writing the note, without betting a patient's safety on the model being right.</p>
+      <h3>Tuning what reaches the nurse</h3>
+      <p>A supervised system fails in two directions. It can miss a flag, or it can bury the nurse in flags until they stop reading them. Tune both on the same eval set. Give each test call a list of what a nurse should see from it, then measure how many of those items the system raised and how many extra items came along. Ship a threshold change only if the misses stay at zero on the safety cases.</p>
+      <p>Ordering matters as much as filtering. Sort the nurse's queue by urgency first and by patient second, so a possible double dose for one patient sits above a refill reminder for another.</p>
+      <p>The AI's job is to make sure nothing important reaches the nurse late and nothing unimportant reaches them at all. In healthcare, that supervision layer is what makes the system defensible.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://www.cms.gov/outreach-and-education/medicare-learning-network-mln/mlnproducts/downloads/chroniccaremanagement.pdf" target="_blank" rel="noopener">CMS MLN909188, Chronic Care Management Services (June 2025)</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="data-layer">
-    <div class="tag">Data · Moats · Jun 2026</div>
+    <div class="kick mono"><span>07</span><span class="tag">Data · Moats</span><span>Jun 2026</span><span>2 min read</span></div>
     <h2>The data layer: what you own when you own the calls</h2>
-    <p>Most AI healthcare companies sell software and hope someone uses it. We took the other path: own the operator, and you own every interaction.</p>
-    <p>When the AI listener sits on every call, you don't just deliver care — you generate a longitudinal record no one else has. Medication adherence over time. Symptom progression. Mobility and fall risk. Behavioral signals. Not episodic snapshots from a clinic visit, but a continuous picture of a patient between visits, structured and queryable.</p>
-    <p>That's the data layer, and it compounds. With enough of it you stop reacting and start predicting — flagging the patient drifting toward an ER visit before it happens. It's the difference between a service and an asset. And you only get it by owning the delivery, not licensing a tool into someone else's workflow.</p>
-    <p>It also gets personal. Every call writes back — what the patient committed to, who they mentioned, when they actually pick up — and a model fine-tunes per patient on what works. The system learns that bringing up someone's grandson before asking about medications lifts honest adherence reporting by ~45%, and bakes it in. (Memory is a hybrid knowledge-graph-plus-vector store, not naive RAG; rebuilding it that way cut retrieval latency in half.) Most voice AI is amnesiac. This is the opposite.</p>
-    <p>That's the moat: the company that owns the calls owns the data, and the data gets better every single day.</p>
+    <p class="dek">When the AI sits on every call, the company builds a longitudinal patient record that improves with every call.</p>
+    <div class="body">
+      <p>Most AI healthcare companies sell software and hope someone uses it. We took the other path. Own the operator, and you own every interaction.</p>
+      <p>When the listeners sit on every call, you deliver care and you also build a longitudinal record no one else has. It covers medication adherence over time, symptom progression, mobility and fall risk, and behavioral signals. A clinic sees episodic snapshots. This is a continuous picture of a patient between visits, structured and queryable.</p>
+      <p>With enough of it, you stop reacting and start predicting, and you can flag the patient drifting toward an ER visit before it happens. A service becomes an asset. You only get there by owning delivery instead of licensing a tool into someone else's workflow.</p>
+      <h3>Per-patient learning</h3>
+      <p>Every call writes back what the patient committed to, who they mentioned, and when they actually pick up. A model fine-tunes per patient on what works. The system learned that bringing up someone's grandson before asking about medications lifts honest adherence reporting by <span class="lead-in">about 45%</span>, and it now does that by default.</p>
+      <div class="stat"><b>~45%</b><span>Lift in honest adherence reporting from one learned conversational habit</span></div>
+      <h3>Memory as a graph</h3>
+      <p>Plain vector retrieval finds passages that look like the question. Microsoft's GraphRAG work documents where that breaks, when the answer needs facts connected across many documents (<a href="https://microsoft.github.io/graphrag/">GraphRAG</a>). A patient's history is that kind of problem. The grandson, the pharmacy and the missed Tuesday visit come up in different calls weeks apart.</p>
+      <p>So memory is a hybrid of a knowledge graph and a vector store. The graph holds people, medications, providers and events as entities with relationships, and one query can walk from the patient to everything connected. Vectors still handle fuzzy recall of what was said. Rebuilding memory this way cut retrieval latency in half. Most voice AI forgets the patient between calls. This system remembers.</p>
+      <h3>Keeping it usable</h3>
+      <p>A record like this only helps if the fields mean the same thing on every call. Have the listeners write structured events with a type, a value, a time and the transcript lines they came from, instead of free-text summaries. A dose change, a missed visit or a new fall then becomes a row a clinician or a model can query across months. Keep the transcript linked from every event, so nobody has to trust a summary they cannot check.</p>
+      <p>The company that owns the calls owns the data, and the data gets better with every call.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://microsoft.github.io/graphrag/" target="_blank" rel="noopener">Microsoft Research, GraphRAG documentation</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="agents">
-    <div class="tag">Agents · Care AI · Jun 2026</div>
-    <h2>The work happens while you're still talking</h2>
-    <p>Here's a thing that should be impossible: by the time an elderly patient hangs up, the refill is ordered, the follow-up visit is booked, the family is notified, and the visit note is already written into the chart. Nobody did paperwork after the call. There was no "after."</p>
-    <p>While the conversation flows, the listeners trigger <span class="lead-in">background agents</span> that execute silently. An appointment agent checks availability and books a slot, then surfaces the time naturally ("does Thursday at 10 work?"). A refill agent places the order and coordinates pharmacy delivery. A notification agent texts the documented caregiver and logs which channel they actually answered on. When something upstream failed — a missed nurse visit, a late delivery — a recovery agent calls the vendor on a parallel line and rebooks it, mid-conversation.</p>
-    <p>And a documentation agent writes the visit note into the chart in parallel, so it's done before the patient says goodbye.</p>
-    <p>A demo agent "can book an appointment." The real version does six things at once, silently, while holding a warm conversation with a 78-year-old — and none of them collide. That orchestration is the whole job.</p>
+    <div class="kick mono"><span>08</span><span class="tag">Agents · Orchestration</span><span>Jun 2026</span><span>2 min read</span></div>
+    <h2>The work happens while you&#x27;re still talking</h2>
+    <p class="dek">Background agents finish the follow-up work during the call, and idempotency keeps their retries safe.</p>
+    <div class="body">
+      <p>By the time an elderly patient hangs up, the refill is ordered, the follow-up visit is booked, the family is notified, and the visit note is in the chart. Nobody does paperwork after the call, because there is no after.</p>
+      <p>While the conversation flows, the listeners trigger <span class="lead-in">background agents</span> that work silently.</p>
+      <figure class="fig" aria-hidden="true"><svg viewBox="0 0 720 230" width="100%"><text x="0" y="33" fill="#f6f1ea" font-family="Geist" font-size="14">Conversation</text><rect x="190.0" y="16" width="510.0" height="24" rx="6" fill="rgba(246,241,234,.08)" stroke="rgba(246,241,234,.16)"/><text x="0" y="73" fill="#a59d91" font-family="Geist" font-size="14">Appointment agent</text><rect x="302.2" y="56" width="132.59999999999997" height="24" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><text x="0" y="113" fill="#a59d91" font-family="Geist" font-size="14">Refill agent</text><rect x="343.0" y="96" width="163.2" height="24" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><text x="0" y="153" fill="#a59d91" font-family="Geist" font-size="14">Notification agent</text><rect x="470.5" y="136" width="76.5" height="24" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><text x="0" y="193" fill="#a59d91" font-family="Geist" font-size="14">Documentation agent</text><rect x="241.0" y="176" width="438.5999999999999" height="24" rx="6" fill="rgba(255,90,42,.22)" stroke="#ff5a2a"/><line x1="700.0" y1="8" x2="700.0" y2="220" stroke="#ff5a2a" stroke-width="2"/><text x="694.0" y="226" fill="#ff5a2a" font-family="Geist Mono" font-size="12" letter-spacing="1" text-anchor="end">CALL ENDS</text></svg><figcaption>Background agents run while the patient is still talking, and all of them finish before the call ends. Timings are illustrative.</figcaption></figure>
+      <ul><li>An appointment agent checks availability, books a slot, and lets the main model offer it naturally ("does Thursday at 10 work?").</li><li>A refill agent places the order and coordinates pharmacy delivery.</li><li>A notification agent texts the documented caregiver and logs which channel they actually answered on.</li><li>A recovery agent calls the vendor on a parallel line when something upstream failed, such as a missed nurse visit or a late delivery, and rebooks it mid-conversation.</li><li>A documentation agent writes the visit note into the chart, so it is done before the patient says goodbye.</li></ul>
+      <h3>Doing things once</h3>
+      <p>Agents that act during a live call will retry. A pharmacy API times out, a network drops, a listener fires twice on the same sentence. A careless retry books two appointments or orders two refills, which is the double-dose problem in software.</p>
+      <p>The fix is the pattern Stripe documented for payments. The client generates a unique key for each operation and sends it with the request. If the request fails and the client retries with the same key, the server returns the cached result of the first success instead of acting again (<a href="https://stripe.com/blog/idempotency">Stripe</a>).</p>
+      <p>For a call agent, derive the key from the call and the intent, for example the call ID, the action and the drug. A second trigger in the same call produces the same key and does nothing new.</p>
+      <h3>Ordering</h3>
+      <p>Some agents depend on others. The notification agent should text the caregiver the appointment time only after the appointment agent has a confirmed slot. Model those dependencies explicitly, and let independent work run in parallel.</p>
+      <p>Agents should also report back into the conversation. When the appointment agent confirms a slot, push the confirmed time to the main model as background context, so it can mention the time before the call ends. When an agent fails, push that too. The main model then tells the patient someone will follow up, instead of promising something that did not happen.</p>
+      <p>A demo agent can book an appointment. The real version does six things at once while holding a warm conversation with a 78-year-old, and none of them collide. That orchestration is the job.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://stripe.com/blog/idempotency" target="_blank" rel="noopener">Stripe, Designing robust and predictable APIs with idempotency</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
   <article id="ehr">
-    <div class="tag">Integration · RPA · Jun 2026</div>
+    <div class="kick mono"><span>09</span><span class="tag">Integration · RPA</span><span>Jun 2026</span><span>2 min read</span></div>
     <h2>Documenting into any EHR without an integration project</h2>
-    <p>What kills AI in healthcare usually isn't the AI. It's the six-to-eighteen-month EHR integration project that has to happen before anything ships. Every operator runs a different system — Athena, Epic, Cerner, eClinicalWorks, the long tail — and each is its own slog of APIs and vendor sign-off.</p>
-    <p>We skipped the whole category. Instead of integrating, the agent uses the EHR the way a nurse does: a browser extension that clicks, types, and navigates the same screens a human would. No API, no SDK, no vendor approval. It writes the visit note, codes the encounter, and updates the care plan inside whatever system is already in place.</p>
-    <p>That collapses the timeline from quarters to days — buy the agency Friday, install the extension Monday, document into their existing EHR by Tuesday. It's not glamorous; RPA never is. But it's the difference between a pilot that ships and a roadmap that doesn't. Picking the unglamorous path that actually works is most of what we do.</p>
+    <p class="dek">A browser agent writes into the EHR the way a nurse does, which takes days instead of a multi-quarter integration.</p>
+    <div class="body">
+      <p>AI in healthcare is often killed by the six to eighteen month EHR integration project that has to happen before anything ships. Operators run Athena, Epic, Cerner, eClinicalWorks and a long tail of smaller systems. Each one is its own slog of APIs and vendor sign-off.</p>
+      <h3>Why the standard API does not solve it</h3>
+      <p>US certified health IT has to offer a standardized API under ONC criterion 170.315(g)(10), built on FHIR Release 4.0.1, the US Core implementation guide and SMART App Launch. The criterion covers read services only (<a href="https://www.healthit.gov/test-method/standardized-api-patient-and-population-services">ONC</a>). An app can read a chart through it. Writing a visit note, coding an encounter or updating a care plan still needs vendor-specific write access, and that comes with the sign-off process.</p>
+      <h3>Use the EHR like a nurse does</h3>
+      <p>We skipped the whole category. The agent uses the EHR through a <span class="lead-in">browser extension</span> that clicks, types and navigates the same screens a nurse would. No API, no SDK, no vendor approval. It writes the visit note, codes the encounter and updates the care plan inside whatever system is already in place.</p>
+      <h3>Making screen automation hold up</h3>
+      <p>Screen automation has a reputation for breaking when a page changes. The cause is usually selectors tied to page structure. Playwright's documentation recommends locating elements by role and label, the way users and assistive technology see the page, because CSS and XPath selectors break when the DOM changes. It also finds the element fresh before every action (<a href="https://playwright.dev/docs/locators">Playwright</a>). An extension can follow the same rules.</p>
+      <ul><li>Find the save button by its role and label, not its position.</li><li>Wait for the page to be ready before typing.</li><li>Read back what was written and compare it with what was meant.</li><li>Stop and ask a person when the screen does not match what the agent expects.</li></ul>
+      <p>Log every write with a screenshot of the form before saving, the values entered and the record identifier, so an auditor can see what the agent did and when. The same checks catch drift. When a vendor ships a new screen layout, the read-back check fails, the agent stops, and someone updates the locator before it runs again.</p>
+      <p>This collapses the timeline from quarters to days. Buy the agency Friday, install the extension Monday, document into their existing EHR by Tuesday. RPA is unglamorous. It is also the difference between a pilot that ships and a roadmap that does not.</p>
+    </div>
+    <div class="sources"><div class="mono">Sources</div><ol><li><a href="https://www.healthit.gov/test-method/standardized-api-patient-and-population-services" target="_blank" rel="noopener">ONC, 170.315(g)(10) Standardized API for patient and population services</a></li><li><a href="https://playwright.dev/docs/locators" target="_blank" rel="noopener">Playwright Docs, Locators</a></li></ol></div>
+    <a class="back mono" href="engineering.html"><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M12 7H2M6 3L2 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> All posts</a>
   </article>
-
+  </div>
 </div>
+
+<section class="contact">
+  <div class="wrap">
+    <div class="mono">Let's talk</div>
+    <h2>Start a project</h2>
+    <p>Tell us what your business does. We'll tell you what the product version of it looks like.</p>
+    <div class="cta-row">
+      <a class="book" href="https://calendly.com/banterai" target="_blank" rel="noopener">Book a call <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9L9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      <a class="email" href="mailto:adam@banterai.app?subject=Project%20inquiry%20%E2%80%94%20Banter%20AI%20Studio">adam@banterai.app</a>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="wrap">
     <div class="row">
       <span>© 2026 Banter AI Studio</span>
-      <a href="mailto:adam@banterai.app">adam@banterai.app</a>
+      <a href="engineering.html">Engineering Blog</a>
       <span>banterai.studio</span>
     </div>
   </div>
 </footer>
-
+<script src="assets/eclipse.js"></script>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.toc a')),arts=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function upd(){var y=innerHeight*.35,cur=0;arts.forEach(function(a,i){if(a.getBoundingClientRect().top<y)cur=i});links.forEach(function(l,i){l.classList.toggle('on',i===cur)})}
+  addEventListener('scroll',upd,{passive:true});upd();
+})();
+</script>
 </body>
 </html>
